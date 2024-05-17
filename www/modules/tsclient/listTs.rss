@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<onEnter>
+	flag   = 0;							  
+    now = getUrl("http://localhost/?page=tsseconds");
+	logo   = "<<IMGCHANEL>>";
+    ground = "<<IMGGROUND>>";
+	ground = getUrl("http://localhost/?page=tsground");
+	
+    rssIdd = "TORENT";
+	rssIdd = getUrl("http://localhost/?page=tsRssIdd");
+	focus = rssIdd - 100000;
+	if (1 != getPageInfo("itemCount") &amp;&amp; "-100000" != focus ) setFocusItemIndex(rssIdd - 1);
+	
+if (rssIdd == "PLAY") {
+	dataImgs = null;
+	Iurl = "http://localhost/?page=tsView&amp;id=<<HASH>>";
+	
+	
+    StrImgs = null;
+	
+	if (null != loadXMLFile(Iurl)) {
+        index = 0;
+		CountItem = getXMLText("inf", "imgs", index, "c");
+
+		StrImgs = "CountItem="+ CountItem;
+		
+		lastIndex = CountItem;
+		while (index &lt; lastIndex) {
+            dataImgs = pushBackStringArray(dataImgs, getXMLText("data", "imgs", index, "l"));
+			dataImgs = pushBackStringArray(dataImgs, getXMLText("data", "imgs", index, "i"));
+			StrImgs = StrImgs + " |||| " + "index=" + index + " link=" + getXMLText("data", "imgs", index, "l") + " img=" + getXMLText("data", "imgs", index, "i");
+		   index = Add(index, 1);
+        }
+	<!-- /* writeStringToFile("/tmp/Img" + now,StrImgs); */-->
+		
+	}
+}
+
+</onEnter>
+<rssLink><link><script>url;</script></link></rssLink>
+
+<onExit>
+ showIdle();
+</onExit>
+
+<mediaDisplay name="onePartView"
+    slidingItemText="no"  
+	sliding="no"
+    showHeader="no"
+    showDefaultInfo="no"
+    imageFocus="null"
+    imageParentFocus="null"
+    backgroundColor="0:0:0"
+    mainPartColor="0:0:0"
+    itemBackgroundColor="0:0:0"
+    itemBorderColor="0:0:0"
+    
+	sideTopHeightPC="0"
+    sideBottomHeightPC="0"
+    sideLeftWidthPC="0"
+    sideRightWidthPC="0"
+    sideColorTop="0:0:0"
+    sideColorBottom="0:0:0"
+    sideColorLeft="0:0:0"
+    sideColorRight="0:0:0"
+    
+	drawItemText="no"
+    drawItemBorder="no"
+    
+	viewAreaXPC="5"
+    viewAreaYPC="3"
+    viewAreaWidthPC="90"
+    viewAreaHeightPC="94"
+
+    idle_ImageXPC="45.625"
+	idle_ImageYPC="42.2526"
+    idle_ImageWidthPC="10"
+    idle_ImageHeightPC="16"
+	
+	
+	idleImageXPC="42"
+	idleImageYPC="35"
+	idleImageWidthPC="16" 
+	idleImageHeightPC="19"
+
+
+    menuXPC="0"
+    menuYPC="0"
+    menuWidthPC="0"
+    menuHeightPC="0"
+
+    headerXPC="0"
+    headerYPC="0"
+    headerWidthPC="0"
+    headerHeightPC="0"
+
+
+    itemImageXPC="0"
+    itemImageYPC="9.8"
+    itemImageWidthPC="0"
+    itemImageHeightPC="0"
+
+    itemXPC="0"
+    itemYPC="9.8"
+    itemWidthPC="100"
+    itemHeightPC="5.9"
+
+    itemPerPage="13"
+    >
+	
+    <<idleImage>>
+    
+    
+    <onUserInput>
+        res = "false";
+        url = null;
+        key = currentUserInput();
+		f  = getFocusItemIndex();
+		z  = getPageInfo("itemCount");
+		step = 6;
+        if (3 == 5) {
+            /* stub section, real logic comes from hot keys */
+        }
+		else if (key == "display" || (key == "video_ffwd") ) {
+			url = "http://localhost/?page=rss_tsstatus";
+            FII = getFocusItemindex();
+            url += "&amp;id=" + urlEncode(getItemInfo(FII, "id"));
+			 /* writeStringToFile("/tmp/1122.d",url); */
+        }
+		else if (key == "five" ) {
+            FII = getFocusItemindex();
+            if (getItemInfo(FII, "category")=="Torrent") {
+				showIdle();
+				burl = "http://localhost/?page=tsbackup";
+				burl += "&amp;mg=" + urlEncode(getItemInfo(FII, "magnet"));
+				burl += "&amp;nm=" + urlEncode(getItemInfo(FII, "info"));
+				getUrl(burl);
+				cancelIdleIdle();
+			}
+        }
+		else if (key == "menu1") {
+            url = "http://localhost/?page=rss_tsclient";
+        }
+        else if ((key == "left") ||(key == "pageup") ){
+			if (f == 0 ) nf = z - 1; else nf = f - step; /*&amp;&amp; flag==-1*/
+			if ( 0 > nf ) nf = 0;  
+			setFocusItemIndex(nf);
+			res = "true";
+        }
+		else if ( (key == "right") || (key == "pagedown")){
+			if (f == (z-1)) nf = 0; else nf = f - ((-1)*step);
+			if ( nf >= (z-1) ) nf = z-1;  
+			setFocusItemIndex(nf);
+			res = "true";
+        }
+		else if ((key == "up")){
+			if (getFocusItemIndex() == 0) {
+				setFocusItemIndex(getPageInfo("itemCount") - 1);
+				res = "true";
+			}
+        }
+        else if ((key == "down")) {
+			if (getFocusItemIndex() == (getPageInfo("itemCount") - 1)) {
+				setFocusItemIndex(0);
+				res = "true";
+			}
+        }
+
+        if (null != url &amp;&amp; "" != url) {
+            jumpToLink("rssLink");
+            res = "true";
+        }
+        if ("true" == res) {
+            flag   = -1;							  
+			redrawDisplay();
+        }
+        res;
+    </onUserInput>
+
+    <backgroundDisplay name="Background">
+        <image offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100"><script>ground;</script></image>
+    </backgroundDisplay>
+
+    <!-- header -->
+    <image offsetXPC="1.9" offsetYPC="1.0" widthPC="6" heightPC="7.8"><script>logo;</script></image>
+
+    <text offsetYPC="3.3" heightPC="4" fontSize="14" offsetXPC="7.7"  widthPC="35.5" foregroundColor="100:100:100" ><<HOST>></text>
+	<text offsetYPC="3" heightPC="4" fontSize="14" offsetXPC="7.5"  widthPC="35.5" foregroundColor="210:210:220" ><<HOST>></text>
+    <text offsetYPC="3.3" heightPC="4" fontSize="16" offsetXPC="68.3"   widthPC="32"   foregroundColor="100:100:100" align="right"><<VERPRG>></text>
+	<text offsetYPC="3" heightPC="4" fontSize="16" offsetXPC="68"   widthPC="32"   foregroundColor="255:255:255" align="right"><<VERPRG>></text>
+	
+    <!-- Hot keys line -->
+		
+<!--<text offsetXPC="57" offsetYPC="96" widthPC="48" heightPC="12" cornerRounding="52" backgroundColor="14:27:33" useBackgroundSurface="yes"/>-->
+    <text offsetXPC="27" offsetYPC="96" widthPC="50" heightPC="12" cornerRounding="52" backgroundColor="24:37:43" useBackgroundSurface="yes"/>
+	
+    <!-- Hot key right = right hint -->
+<!--<image offsetXPC="60.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>display.png</image>-->
+	<image offsetXPC="30.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>display.png</image>
+	
+<!--<image offsetXPC="64" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>ffwd.png</image>-->
+	<image offsetXPC="34" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>ffwd.png</image>
+	
+<!--<text  offsetXPC="68" offsetYPC="96.3" widthPC="16.5" heightPC="3.4"-->
+	<text  offsetXPC="38" offsetYPC="96.3" widthPC="16.5" heightPC="3.4"
+        foregroundColor="100:100:100" fontSize="13"
+        backgroundColor="24:37:43">Status Torrent</text>
+
+    <!-- Hot key ffwd = video_ffwd hint -->
+<!--<image offsetXPC="85.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>menu.png</image>-->
+	<image offsetXPC="53.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>left.png</image>
+	<image offsetXPC="57.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>right.png</image>
+<!--<text  offsetXPC="89" offsetYPC="96.3" widthPC="16.5" heightPC="3.4"-->
+	<text  offsetXPC="62" offsetYPC="96.3" widthPC="11.5" heightPC="3.4"
+        foregroundColor="100:100:100" fontSize="13" 
+        backgroundColor="24:37:43">Step -6 / +6</text>
+	
+	<text redraw="yes" lines="2" fontSize="15"
+        offsetXPC="5" offsetYPC="86.7" widthPC="95" heightPC="9.2"
+        foregroundColor="210:210:220" backgroundColor="-1:-1:-1" useBackgroundSurface="yes" align="center">>
+		<script>currDescr;</script>
+    </text>
+	
+
+	<text redraw="yes" align="left" fontSize="13"
+        offsetXPC="3" offsetYPC="95" widthPC="25" heightPC="4.3"
+        foregroundColor="210:210:220" backgroundColor="-1:-1:-1" useBackgroundSurface="yes">
+		<script>
+		getFocusItemIndex() - (-1) + " / " + getPageInfo("itemCount");
+		</script>
+	</text>
+	
+	
+    <itemDisplay>
+        <script>
+            FII = getFocusItemIndex();
+            QII = getQueryItemIndex();
+            if (FII == QII) {
+                progBg = "0:200:239";
+                itemBg = "0:154:236";
+				itemTg = "0:154:236";
+				itemFg = "255:255:255";
+                infoFg = itemFg;
+            } else {
+                progBg = "23:42:51";
+                itemBg = "30:40:50";
+                itemTg = "40:50:60";
+				itemFg = "200:200:200";
+                infoFg = "130:130:130";
+            }
+
+                info    = getItemInfo("info");
+                time    = getItemInfo("time");
+                percent = getItemInfo("percent");
+                if (FII == QII) {
+                    currTime    = time;
+                    currPercent = percent;
+                    currDescr   = getItemInfo("description");
+                    if (null == currDescr || "" == currDescr) {
+                        currDescr = info;
+                    }
+                }
+           
+        </script>
+
+ 
+		<text offsetXPC="0" offsetYPC="4" widthPC="100" heightPC="96">
+            <backgroundColor><script>itemBg;</script></backgroundColor>
+			<script>"";</script>
+        </text>
+		
+		<text offsetXPC="0" offsetYPC="4" widthPC="19.5" heightPC="96">
+            <backgroundColor><script>itemTg;</script></backgroundColor>
+			<script>"";</script>
+        </text>
+		
+		<text offsetXPC="0" offsetYPC="4" widthPC="7.5" heightPC="96">
+            <backgroundColor><script>itemBg;</script></backgroundColor>
+			<script>"";</script>
+        </text>
+        
+		<image offsetXPC="3" offsetYPC="5" widthPC="3.5" heightPC="90">
+            <script> if (null != dataImgs &amp;&amp; "" != dataImgs) 
+						{ 	
+							ofset = QII * 2;
+							img = getStringArrayAt(dataImgs, Add(ofset, 1));
+							writeStringToFile("/tmp/img.inf",QII + " || " + ofset + " || " + img);
+							img;
+						} 
+					else  getItemInfo("media:thumbnail");
+			</script>
+			
+        </image>
+        <text offsetXPC="7" offsetYPC="0" widthPC="13" heightPC="100" fontSize="15" align="center">
+              <foregroundColor><script>itemFg;</script></foregroundColor>
+        <script> getItemInfo("title");</script>
+
+        </text>
+        
+		<text offsetXPC="20" offsetYPC="4" widthPC="65" heightPC="96">
+            <backgroundColor><script>progBg;</script></backgroundColor>
+            <widthPC><script>percent * 57 / 100;</script></widthPC>
+        </text>
+        
+		<text offsetXPC="20" offsetYPC="0" widthPC="65" heightPC="100" fontSize="15">
+            <foregroundColor><script>infoFg;</script></foregroundColor>
+            <script>info;</script>
+        </text>
+        <text offsetXPC="84" offsetYPC="0" widthPC="13" heightPC="100" fontSize="15" align="right">
+            <foregroundColor><script>infoFg;</script></foregroundColor>
+            <script>time;</script>
+        </text>
+		
+    </itemDisplay>
+</mediaDisplay>
+
+
+<channel>
+    <<ITEMS>>
+
+</channel>
+
+</rss>
