@@ -1,5 +1,5 @@
 [tsclient]
-	revision = 1.02
+	revision = 1.03
 	title = "TorrServe MOS client"
 	role = rss
 	files = "www/modules/tsclient/"
