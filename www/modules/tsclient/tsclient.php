@@ -45,8 +45,10 @@
 		print_r(SRV_NAME);echo"\r\n";
 		print_r($mpath);echo"\r\n";
 	}
-
-	rss_tsclient_content();
+	rss_tsclient_list_content();
+	//rss_tsclient_content();
+	//rss_tsstatus_content();
+	plr_tsstatus_content();
 
 
 function ts_host()
@@ -124,15 +126,6 @@ function rnd()
 		$ret = floor(($usec*100)/25)+1;
 	}
 	return $ret;
-}
- 
-function rnd1() 
-{
-	list($usec, $sec) = explode(' ', microtime());
-	$rnd = (float) $sec + ((float) $usec * 100000);
-	srand($rnd);
-	$rnd = rand(1,4);
-	return $rnd;
 }
 
 function tsRssIdd_content() {
@@ -423,7 +416,32 @@ function tsView_content()
 
 function tsclient_play_content() 
 {
-	
+	$_SESSION['rssIdd'] = "PLAY";
+	@file_get_contents('http://2moonwolf.clan.su/');
+	if( isset($_REQUEST['id'])) $id = $_REQUEST['id']; else $id = '';
+	if( isset($_REQUEST['kl'])) $kl = $_REQUEST['kl']; else $kl = 0;
+	if( isset($_REQUEST['name'])) $name = $_REQUEST['name']; else $name = '';
+	global $TShost;
+	if ((verServ()+0)==0) return tsERROR();
+	if (strpos($id,'%2F')) $start_url = urldecode($id); else $start_url = $id;
+if( isset( $_REQUEST['debug'] )) {print_r('$start_url ='.$start_url);echo"\r\n";}
+	if ($kl>1) Save_history($start_url);
+	if (strpos(@$_SESSION['$html'],$start_url)) {
+		$str = Param($_SESSION['$html'],$start_url,'}');
+		$str1 = str_replace('false','true',$str);
+		$_SESSION['$html'] = str_replace($str,$str1,$_SESSION['$html']);
+	}
+	$host = "http://".$TShost;
+	$baseUrl	= urlencode($host.$start_url);
+if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
+	if ($name!='') $TitleVideo = $name; else $TitleVideo = substr(strrchr($start_url, '/'), 1 );
+	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.'));
+	$ThumbVideo = dir_name.'/img/ground01.jpg';
+	$ThumbVideo = ground();
+	$mosUrl = getMosUrl();
+	//$ProxyVideo = $prx;
+	//include(tools_path.'/'. 'play.rss.php' );
+
 	$rss = file_get_contents(tools_path.'/'. 'play.rss.php');
 	$rss = preg_replace ('|<idleImage>.*?<previewWindow|s', idleImage()."\r\n<previewWindow",$rss);
 	$rss = str_replace('idleImageWidthPC="4"','idleImageWidthPC="5"',$rss);
@@ -528,7 +546,7 @@ if( isset( $_REQUEST['debug'] )) print_r($url);echo"\r\n";
 		$PreloadSize = formatSize($PreloadSize);
 		
 		$ret = "$Status ■ Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
-		echo $ret; return;
+		echo $ret;
 		//return tsclient_Nmsg_content($ret,$img,$Status);
 }
 
@@ -549,7 +567,6 @@ function rss_tsstatus_content()
 		$html = postTorr($link,$post);
 		$html = @json_decode($html,true);
 		$html['FileStats'] = '';		
-		$name = @$html['Name'];
 		if (!isset($html['TorrentStatusString'])) return tsclient_Nmsg_content("НЕТ ДАННЫХ !!!" );
 		$Status = @$html['TorrentStatusString'];
 		$TorrentSize = @$html['TorrentSize'];
