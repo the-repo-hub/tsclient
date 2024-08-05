@@ -45,7 +45,7 @@
 		print_r(SRV_NAME);echo"\r\n";
 		print_r($mpath);echo"\r\n";
 	}
-	rss_tsclient_list_content();
+//	rss_tsclient_list_content();
 	rss_tsclient_content();
 	rss_tsstatus_content();
 	plr_tsstatus_content();
@@ -188,11 +188,11 @@ function rss_tsclient_content()
 	foreach ($info as $n => $data) {
 		if ($data=='') continue;
 		$i += 1;
-		$name 	= $data['title'];
-		$hash 	= $data['hash'];
+		$name = $data['title'];
+		$hash = $data['hash'];
+		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
+		$link = $Pload;
 		if ($hash==$lastUrl) $focus = $i;
-		// Files [0] -> Link is like "/torrent/view/0712f32290e1bf528d6c3bec160fe156fdf59bb4/Храброе_сердце.avi"
-		$Pload  = str_replace('/view/','/preload/',@$data['Files'][0]['Link']);
 		$len = @$data['torrent_size'];
 		if (($len+0)>0) $len = formatSize($len); else $len = 'Got info';
 		$kol = @count($data['Files']);
@@ -203,8 +203,8 @@ function rss_tsclient_content()
 	$ITEM = '<item>
         <title>'.$kol.'</title>
         <description><![CDATA['.$name.']]></description>
-        <id>'.$i.'</id>
-        <link>'.$Lurl.'&amp;id='.$hash.'</link>
+        <id>'.$Pload.'</id>
+        <link>'.$Lurl.'/?page=rss_tsclient_list&amp;id='.$hash.'</link>
         <media:thumbnail url="'.$thumb.'" />
         <info>'.$name.'</info>
         <category>Torrent</category>
