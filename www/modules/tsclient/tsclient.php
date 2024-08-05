@@ -46,8 +46,8 @@
 		print_r($mpath);echo"\r\n";
 	}
 	rss_tsclient_list_content();
-	//rss_tsclient_content();
-	//rss_tsstatus_content();
+	rss_tsclient_content();
+	rss_tsstatus_content();
 	plr_tsstatus_content();
 
 
@@ -274,22 +274,20 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 	
 //if( isset( $_REQUEST['debug'])) {	print_r($data);}
 	$title = @$data['title'];
-	if (isset($data['Files'])) $html = $data['Files']; else $html = array();
+//	if (isset($data['Files'])) $html = $data['Files']; else $html = array();
 	global $Lurl;
 	//$Lurl = getMosUrl().'?page=tsclient_play&amp;kl=0';
 	$ITEMS = PHP_EOL;
 	$ITEMS = '';
 	$i = 0; $focus = 0;
 	foreach ($html as $n => $data) {
-		$link = @$data['Link'];
-		if ($link=='') continue;
-		$link = $data['Link'];
-		$name = $data['Name'];
-		//$Pload  = @$data['Preload'];
-		$Pload  = str_replace('/view/','/preload/',@$data['Link']);
-		$len = @$data['Size'];
+		$name = $data['title'];
+		$hash = $data['hash'];
+		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
+		$link = $Pload;
+		$len = @$data['torrent_size'];
 		if (($len+0)>0) $len = formatSize($len); else $len = 'Got info';
-		$lk = strtolower($link);
+		$lk = strtolower($name);
 		$type = strlen($lk); $type = $lk[$type-3].$lk[$type-2].$lk[$type-1];
 		if ($type!='avi' && $type!='mkv' && $type!='mov' && $type!='vob' && $type!='mp4' && $type!='asf' && $type!='flv' && $type!='wmv' && $type!='mpg' && $type!='mp2' && $type!='.ts') { 
 			//$_SESSION['$html'] = str_replace(json_encode($data,JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_AMP).',','',$_SESSION['$html']);
@@ -315,7 +313,7 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 			<title>'."№$i".'</title>
 			<description><![CDATA['.$name.']]></description>
 			<id>'.$Pload.'</id>
-			<link>'.$Lurl.'&amp;id='.urlencode($link).'&amp;name='.urlencode($name).'</link>
+			<link>'.$Lurl.'/?page=rss_tsclient_list&amp;id='.urlencode($link).'&amp;name='.urlencode($name).'</link>
 			<media:thumbnail url="'.$thumb.'" />
 			<info>'.$name.'</info>
 			<category>TorrentList</category>
