@@ -46,9 +46,9 @@
 		print_r($mpath);echo"\r\n";
 	}
 //	rss_tsclient_list_content();
-	rss_tsclient_content();
-	rss_tsstatus_content();
-	plr_tsstatus_content();
+//	rss_tsclient_content();
+//	rss_tsstatus_content();
+	tsView_content();
 
 
 function ts_host()
@@ -230,7 +230,6 @@ function rss_tsclient_content()
 	$rss = str_replace("<<PROGPTH>>",DIR_NAME."/",$rss);
 	$rss = str_replace("<<idleImage>>",idleImage(),$rss);
 	$rss = str_replace("<<VERPRG>>",SRV_NAME,$rss);
-	$rss = str_replace("<<HOST>>",$SerName,$rss);
 	$rss = str_replace("<<ITEMS>>",$ITEMS,$rss);
 	
 	$rss = preg_replace ('|viewAreaXPC=".*?"|s', 'viewAreaXPC="'.$nav_options['rss_xpc'].'"',$rss);
@@ -380,28 +379,17 @@ function tsView_content()
 			if ($html!='') $_SESSION['$html'] = $html;
 		}
 	$html = @json_decode($html,true);
-	
-	if (count($html)>0) {
-		foreach ($html as $data) if (@$data['Hash']==$hash) break;
-	} else {
-		$data = array( 'Files' => ''); 
-	}
-	$html = @$data['Files'];
 	$IMGS = ''; $i = 0;
 	foreach ($html as $n => $data) {
 		//$link = @$data['Preload'];
-		$link = @$data['Link'];
-		$lk = strtolower($link);
+		$name = $data['title'];
+		$hash = $data['hash'];
+		$link = "/stream/".$name."?link=".$hash."&index=1&play";
+		$lk = strtolower($name);
 		$type = strlen($lk); $type = $lk[$type-3].$lk[$type-2].$lk[$type-1];
 		if ($type!='avi' && $type!='mkv' && $type!='mov' && $type!='vob' && $type!='mp4' && $type!='asf' && $type!='flv' && $type!='wmv' && $type!='mpg' && $type!='mp2' && $type!='.ts') continue;
-	/*
-		if (strpos($lk,'.avi')==false && strpos($lk,'.mkv')==false && strpos($lk,'.mov')==false && strpos($lk,'.vob')==false && strpos($lk,'.mp4')==false 
-			&& strpos($lk,'.asf')==false && strpos($lk,'.flv')==false && strpos($lk,'.wmv')==false && strpos($lk,'.mpg')==false && strpos($lk,'.mp2')==false && strpos($lk,'.ts')==false) continue;
-	*/
 		$i += 1;
-		$view = $data['Viewed'];
-		if ($view==1) $pic = 'view.png'; else $pic = 'false.png';
-		$pic = DIR_NAME."/img/$pic";
+		$pic = DIR_NAME."/img/view.png";
 		$img = '<imgs><l>'.$link.'</l><i>'.$pic.'</i></imgs>'.PHP_EOL;
 		$IMGS .= $img;
 	}
