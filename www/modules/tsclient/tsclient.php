@@ -21,9 +21,8 @@
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path);require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
 
-	//FIXME Debug
 	$config = array (
-				"host" => "192.168.1.7:18090",
+				"host" => "No set IP",
 				"history" => "ram",
 				"ground" => 5,
 			  );
@@ -31,9 +30,8 @@
 	@include (DIR_NAME.'/ts.config.php');
 	$TShost = ts_host();
 	// assumption: getMosUrl -> http://192.168.1.10
-	// FIXME hard
-	//$Lurl = getMosUrl().'?page=rss_tsclient_list';
-	$Lurl = 'http://192.168.1.10';
+	$Lurl = getMosUrl();
+//	$Lurl = 'http://192.168.1.10';
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
@@ -45,10 +43,6 @@
 		print_r(SRV_NAME);echo"\r\n";
 		print_r($mpath);echo"\r\n";
 	}
-//	rss_tsclient_list_content();
-//	rss_tsclient_content();
-//	rss_tsstatus_content();
-	tsView_content();
 
 
 function ts_host()
