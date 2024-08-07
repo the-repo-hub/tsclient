@@ -4,7 +4,7 @@
 	//error_reporting( E_ERROR ); // Set E_ALL for debuging
 	error_reporting(E_ALL); ini_set('display_errors', 1);
 	//@file_get_contents('http://2moonwolf.clan.su/');
-	
+	$_REQUEST['debug'] = true;
 	if (!function_exists('mb_strlen')) {
 	function mb_substr($str, $pos, $kl,$s=null) {
 		return  iconv_substr($str,$pos, $kl,'UTF-8');
@@ -20,18 +20,17 @@
 	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path);require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
-	//FIXME debug
+	//FIXME DEBUG
 	$config = array (
-				"host" => "192.168.1.7:18090",
-				"history" => "ram",
-				"ground" => 5,
-			  );
-
+			"host" => "192.168.1.7:18090",
+			"history" => "ram",
+			"ground" => 5,
+		  );
 	@include (DIR_NAME.'/ts.config.php');
 	$TShost = ts_host();
 	// assumption: getMosUrl -> http://192.168.1.10
-	$Lurl = getMosUrl();
-//	$Lurl = 'http://192.168.1.10';
+//	$Lurl = getMosUrl();
+	$Lurl = 'http://192.168.1.10';
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
@@ -43,7 +42,7 @@
 		print_r(SRV_NAME);echo"\r\n";
 		print_r($mpath);echo"\r\n";
 	}
-
+	rss_tsclient_list_content();
 
 function ts_host()
 {
@@ -274,9 +273,12 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 	$ITEMS = '';
 	$i = 0; $focus = 0;
 	foreach ($html as $n => $data) {
+		$i += 1;
 		$name = $data['title'];
 		$hash = $data['hash'];
-		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
+//		maybe i should change the link like this:
+		$Pload = "/play/".$hash."/".$i;
+//		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
 		$link = $Pload;
 		$len = @$data['torrent_size'];
 		if (($len+0)>0) $len = formatSize($len); else $len = 'Got info';
@@ -291,7 +293,6 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 		if (strpos($lk,'.avi')==false && strpos($lk,'.mkv')==false && strpos($lk,'.mov')==false && strpos($lk,'.vob')==false && strpos($lk,'.mp4')==false 
 			&& strpos($lk,'.asf')==false && strpos($lk,'.flv')==false && strpos($lk,'.wmv')==false && strpos($lk,'.mpg')==false && strpos($lk,'.mp2')==false && strpos($lk,'.ts')==false) continue;
 	*/
-		$i += 1;
 		$last = @$history[$hash];
 		if (!empty($last) && strpos($link,$last)) $focus = $i;
 		$view = $data['Viewed'];

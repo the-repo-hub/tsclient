@@ -4,7 +4,7 @@ error_reporting( E_ERROR ); // Set E_ALL for debuging
 $path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 include 'init.php';
 $config = array (
-	"host" => "No set IP",
+	"host" => "192.168.1.7:18090",
 	"history" => "ram",
 	"ground" => 5,
 );
