@@ -20,9 +20,9 @@
 	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path);require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
-
+	//FIXME debug
 	$config = array (
-				"host" => "No set IP",
+				"host" => "192.168.1.7:18090",
 				"history" => "ram",
 				"ground" => 5,
 			  );
