@@ -4,7 +4,7 @@
 	//error_reporting( E_ERROR ); // Set E_ALL for debuging
 	error_reporting(E_ALL); ini_set('display_errors', 1);
 	//@file_get_contents('http://2moonwolf.clan.su/');
-	$_REQUEST['debug'] = true;
+//	$_REQUEST['debug'] = true;
 	if (!function_exists('mb_strlen')) {
 	function mb_substr($str, $pos, $kl,$s=null) {
 		return  iconv_substr($str,$pos, $kl,'UTF-8');
@@ -42,7 +42,9 @@
 		print_r(SRV_NAME);echo"\r\n";
 		print_r($mpath);echo"\r\n";
 	}
-	rss_tsclient_list_content();
+//	rss_tsclient_list_content();
+//	tsView_content();
+//	tsclient_play_content();
 
 function ts_host()
 {
@@ -276,6 +278,7 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 		$i += 1;
 		$name = $data['title'];
 		$hash = $data['hash'];
+		// TODO choose one
 //		maybe i should change the link like this:
 		$Pload = "/play/".$hash."/".$i;
 //		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
@@ -295,8 +298,10 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 	*/
 		$last = @$history[$hash];
 		if (!empty($last) && strpos($link,$last)) $focus = $i;
-		$view = $data['Viewed'];
-		if ($view==1) $pic = 'view.png'; else $pic = 'false.png';
+		// FIXME debug
+//		$view = $data['Viewed'];
+//		if ($view==1) $pic = 'view.png'; else $pic = 'false.png';
+		$pic = 'view.png';
 		if (strpos($name,'/')!==false) {
 			$name = '<<>>'.strstr($name, '/');
 			$name = str_replace('<<>>/','',$name);
@@ -379,7 +384,9 @@ function tsView_content()
 		//$link = @$data['Preload'];
 		$name = $data['title'];
 		$hash = $data['hash'];
-		$link = "/stream/".$name."?link=".$hash."&index=1&play";
+		// TODO choose one
+//		$link = "/stream/".$name."?link=".$hash."&index=1&play";
+		$link = "/play/".$hash."/".$i;
 		$lk = strtolower($name);
 		$type = strlen($lk); $type = $lk[$type-3].$lk[$type-2].$lk[$type-1];
 		if ($type!='avi' && $type!='mkv' && $type!='mov' && $type!='vob' && $type!='mp4' && $type!='asf' && $type!='flv' && $type!='wmv' && $type!='mpg' && $type!='mp2' && $type!='.ts') continue;
@@ -398,12 +405,10 @@ function tsView_content()
 function tsclient_play_content() 
 {
 	$_SESSION['rssIdd'] = "PLAY";
-	@file_get_contents('http://2moonwolf.clan.su/');
 	if( isset($_REQUEST['id'])) $id = $_REQUEST['id']; else $id = '';
 	if( isset($_REQUEST['kl'])) $kl = $_REQUEST['kl']; else $kl = 0;
 	if( isset($_REQUEST['name'])) $name = $_REQUEST['name']; else $name = '';
 	global $TShost;
-	if ((verServ()+0)==0) return tsERROR();
 	if (strpos($id,'%2F')) $start_url = urldecode($id); else $start_url = $id;
 if( isset( $_REQUEST['debug'] )) {print_r('$start_url ='.$start_url);echo"\r\n";}
 	if ($kl>1) Save_history($start_url);
@@ -416,10 +421,11 @@ if( isset( $_REQUEST['debug'] )) {print_r('$start_url ='.$start_url);echo"\r\n";
 	$baseUrl	= urlencode($host.$start_url);
 if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	if ($name!='') $TitleVideo = $name; else $TitleVideo = substr(strrchr($start_url, '/'), 1 );
+	// TODO remove it
 	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
-	$ThumbVideo = ground();
-	$mosUrl = getMosUrl();
+//	$ThumbVideo = ground();
+	global $mosUrl;
 	//$ProxyVideo = $prx;
 	//include(tools_path.'/'. 'play.rss.php' );
 
