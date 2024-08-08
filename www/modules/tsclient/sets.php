@@ -3,6 +3,7 @@ error_reporting( E_ERROR ); // Set E_ALL for debuging
 
 $path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 include 'init.php';
+//FIXME debug
 $config = array (
 	"host" => "192.168.1.7:18090",
 	"history" => "ram",
@@ -163,7 +164,7 @@ if (strpos($icon,'rss_tsclient')) $icon = 'on'; else $icon = 'off';
 <?php 
 echo $config['host'];
 ?>
-"/> IP адрес внешнего (PC или Android) устройства c установленым TorrServer - например 192.168.0.55
+"/> IP и порт адрес внешнего (PC или Android) устройства c установленым TorrServer - например 192.168.0.55:8090
 </td>
 </tr>
 

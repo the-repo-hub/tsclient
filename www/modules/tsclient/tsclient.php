@@ -4,7 +4,7 @@
 	//error_reporting( E_ERROR ); // Set E_ALL for debuging
 	error_reporting(E_ALL); ini_set('display_errors', 1);
 	//@file_get_contents('http://2moonwolf.clan.su/');
-//	$_REQUEST['debug'] = true;
+	
 	if (!function_exists('mb_strlen')) {
 	function mb_substr($str, $pos, $kl,$s=null) {
 		return  iconv_substr($str,$pos, $kl,'UTF-8');
@@ -18,33 +18,33 @@
 	if (strpos($stat,'.dat') || $stat=='') define("PGST", 'load', true); else define("PGST", 'mem', true);
 	$ses = md5('TSMOSCLIENTSid123456789'); session_name('TSMOSCLIENT'); session_id($ses); session_start();
 	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
-	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path);require_once($tpath.'/tools.php');
+	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path); require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
-	//FIXME DEBUG
+	//FIXME debug
 	$config = array (
 			"host" => "192.168.1.7:18090",
 			"history" => "ram",
 			"ground" => 5,
 		  );
 	@include (DIR_NAME.'/ts.config.php');
+	
 	$TShost = ts_host();
-	// assumption: getMosUrl -> http://192.168.1.10
-//	$Lurl = getMosUrl();
-	$Lurl = 'http://192.168.1.10';
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
 	define("SRV_VER", "V1.02", true);
 	define("SRV_NAME", SRV_MENU." ".SRV_VER, true);
+
+
+
+	ts_host();
 	if( isset( $_REQUEST['debug'] )) {
 		print_r(PGST);echo"\r\n";
 		print_r(DIR_NAME);echo"\r\n";
 		print_r(SRV_NAME);echo"\r\n";
 		print_r($mpath);echo"\r\n";
 	}
-//	rss_tsclient_list_content();
-//	tsView_content();
-//	tsclient_play_content();
+
 
 function ts_host()
 {
@@ -134,7 +134,7 @@ function tsground_content()
 	$img = DIR_NAME."/img/ground0$gr.jpg";
 	echo $img;
 }	
-	
+
 function tsseconds_content()
 {
 echo time();
@@ -164,9 +164,16 @@ function rss_tsclient_content()
 	
 	$_SESSION['rssIdd'] = "TORRENT";
 	$host = "http://".$TShost;
+//	$ver = verServ();
+//	if (($ver+0)!=0) $SerName = "$host ver. $ver"; else $SerName = "$host ОШИБКА СЕТИ!!!";
+//if( isset( $_REQUEST['debug'] )) print_r($SerName);echo"\r\n";
+	//if ((verServ()+0)==0) return tsERROR();
 	$link = $host."/torrents";
 	$post = '{"action":"list"}';
-	if (PGST=='mem' && isset($_SESSION['$html'])) $html = $_SESSION['$html']; else 
+	//if (isset($_SESSION['$html'])) $html = $_SESSION['$html']; else { $html = postTorr($link); $_SESSION['$html'] = $html;}
+	
+	if (PGST=='mem' && isset($_SESSION['$html'])) $html = $_SESSION['$html'];
+	else
 		{ 
 			$html = postTorr($link, $post);
 			if ($html!='') $_SESSION['$html'] = $html;
@@ -174,8 +181,8 @@ function rss_tsclient_content()
 	$html = @json_decode($html,true);
 	if (count($html)>0) $info=$html; else $info = array( 0 => '');
 //if( isset( $_REQUEST['debug'] )) print_r($info);echo"\r\n";
-
-	global $Lurl;
+	
+	$Lurl = getMosUrl().'?page=rss_tsclient_list';
 	$ITEMS = PHP_EOL;
 	$history = load_history();
 	$lastUrl = @$history['last'];
@@ -183,11 +190,14 @@ function rss_tsclient_content()
 	foreach ($info as $n => $data) {
 		if ($data=='') continue;
 		$i += 1;
-		$name = $data['title'];
-		$hash = $data['hash'];
-		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
-		$link = $Pload;
+		$name 	= $data['title'];
+		$hash 	= $data['hash'];
 		if ($hash==$lastUrl) $focus = $i;
+
+		// TODO choose one
+		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
+//		$Pload = "/play/".$hash."/".$i;
+
 		$len = @$data['torrent_size'];
 		if (($len+0)>0) $len = formatSize($len); else $len = 'Got info';
 		$kol = @count($data['Files']);
@@ -199,7 +209,7 @@ function rss_tsclient_content()
         <title>'.$kol.'</title>
         <description><![CDATA['.$name.']]></description>
         <id>'.$Pload.'</id>
-        <link>'.$Lurl.'/?page=rss_tsclient_list&amp;id='.$hash.'</link>
+        <link>'.$Lurl.'&amp;id='.$hash.'</link>
         <media:thumbnail url="'.$thumb.'" />
         <info>'.$name.'</info>
         <category>Torrent</category>
@@ -243,7 +253,6 @@ function rss_tsclient_list_content()
 	global $TShost;
 	global $nav_options;
 	$host = "http://".$TShost;
-	$hash = 'none';
 	if( isset($_REQUEST['id'])) $hash = $_REQUEST['id'];
 if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 	if (PGST=='mem' && isset($_SESSION['$html'])) $html = $_SESSION['$html']; else 
@@ -269,8 +278,7 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 //if( isset( $_REQUEST['debug'])) {	print_r($data);}
 	$title = @$data['title'];
 //	if (isset($data['Files'])) $html = $data['Files']; else $html = array();
-	global $Lurl;
-	//$Lurl = getMosUrl().'?page=tsclient_play&amp;kl=0';
+	$Lurl = getMosUrl().'?page=tsclient_play&amp;kl=0';
 	$ITEMS = PHP_EOL;
 	$ITEMS = '';
 	$i = 0; $focus = 0;
@@ -279,9 +287,9 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 		$name = $data['title'];
 		$hash = $data['hash'];
 		// TODO choose one
-//		maybe i should change the link like this:
-		$Pload = "/play/".$hash."/".$i;
-//		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
+		$Pload = "/stream/".$name."?link=".$hash."&index=1&play";
+//		$Pload = "/play/".$hash."/".$i;
+
 		$link = $Pload;
 		$len = @$data['torrent_size'];
 		if (($len+0)>0) $len = formatSize($len); else $len = 'Got info';
@@ -312,7 +320,7 @@ if( isset( $_REQUEST['debug'])) { print_r($hash); echo "\r\n";}
 			<title>'."№$i".'</title>
 			<description><![CDATA['.$name.']]></description>
 			<id>'.$Pload.'</id>
-			<link>'.$Lurl.'/?page=rss_tsclient_list&amp;id='.urlencode($link).'&amp;name='.urlencode($name).'</link>
+			<link>'.$Lurl.'&amp;id='.urlencode($link).'&amp;name='.urlencode($name).'</link>
 			<media:thumbnail url="'.$thumb.'" />
 			<info>'.$name.'</info>
 			<category>TorrentList</category>
@@ -373,9 +381,10 @@ function tsView_content()
 	global $TShost;
 	$host = "http://".$TShost;
 	$link = $host."/torrents";
+	$post = '{"action":"list"}';
 	if (isset($_SESSION['$html'])) $html = $_SESSION['$html']; else 
 		{ 
-			$html = postTorr($link); 
+			$html = postTorr($link, $post);
 			if ($html!='') $_SESSION['$html'] = $html;
 		}
 	$html = @json_decode($html,true);
@@ -384,12 +393,18 @@ function tsView_content()
 		//$link = @$data['Preload'];
 		$name = $data['title'];
 		$hash = $data['hash'];
+
 		// TODO choose one
-//		$link = "/stream/".$name."?link=".$hash."&index=1&play";
-		$link = "/play/".$hash."/".$i;
+		$link = "/stream/".$name."?link=".$hash."&index=1&play";
+//		$link = "/play/".$hash."/".$i;
+
 		$lk = strtolower($name);
 		$type = strlen($lk); $type = $lk[$type-3].$lk[$type-2].$lk[$type-1];
 		if ($type!='avi' && $type!='mkv' && $type!='mov' && $type!='vob' && $type!='mp4' && $type!='asf' && $type!='flv' && $type!='wmv' && $type!='mpg' && $type!='mp2' && $type!='.ts') continue;
+	/*
+		if (strpos($lk,'.avi')==false && strpos($lk,'.mkv')==false && strpos($lk,'.mov')==false && strpos($lk,'.vob')==false && strpos($lk,'.mp4')==false 
+			&& strpos($lk,'.asf')==false && strpos($lk,'.flv')==false && strpos($lk,'.wmv')==false && strpos($lk,'.mpg')==false && strpos($lk,'.mp2')==false && strpos($lk,'.ts')==false) continue;
+	*/
 		$i += 1;
 		$pic = DIR_NAME."/img/view.png";
 		$img = '<imgs><l>'.$link.'</l><i>'.$pic.'</i></imgs>'.PHP_EOL;
@@ -421,14 +436,10 @@ if( isset( $_REQUEST['debug'] )) {print_r('$start_url ='.$start_url);echo"\r\n";
 	$baseUrl	= urlencode($host.$start_url);
 if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	if ($name!='') $TitleVideo = $name; else $TitleVideo = substr(strrchr($start_url, '/'), 1 );
-
-	// !!! TODO !!!
-	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.'));
+	// TODO NB: this is necessary, even it is not in use, dont delete this
+	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.')); 
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
-	$ThumbVideo = ground();
 	$mosUrl = getMosUrl();
-	// IT IS NECESSARY
-
 	//$ProxyVideo = $prx;
 	//include(tools_path.'/'. 'play.rss.php' );
 
@@ -464,15 +475,15 @@ if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	$rss = str_replace('key == "display"))
 		{','key == "display"))
 		{'."\r\n".'			if (barStatus == "status" ) executeScript("hidePopup");',$rss);
-
+	
 	//<foregroundColor> <script> if ( -5 = popupHidePos ) color = "255:255:255"; color;</script> </foregroundColor>
-
+	
 	//<widthPC><script>57 - popupHidePos;
-
-
-
+	
+	
+	
 	//$rss = str_replace('idleImageYPC="89"','idleImageYPC="5"',$rss);
-
+	
 	//if (preg_match('|'.$id.'.*?"Viewed":(.*?)}|s',@$_SESSION['$html'],$r)>0) $r = $r[1]; else $r='';
 	//echo $rss;
 
@@ -503,6 +514,7 @@ function plr_tsstatus_content()
 {
 		global $TShost;
 		$host = "http://".$TShost;
+		//if ((verServ()+0)==0) return tsERROR();
 		if( isset($_REQUEST['id'])) $id = $_REQUEST['id'];
 		$id = str_replace('/view/','/preload/',$id);
 		if (strpos(" $id",$host)) $id = str_replace($host,'',$id);
@@ -510,7 +522,7 @@ function plr_tsstatus_content()
 if( isset( $_REQUEST['debug'] )) print_r($hash);echo"\r\n";
 		$url = $host.$id;
 if( isset( $_REQUEST['debug'] )) print_r($url);echo"\r\n";		
-		$post = '{"Hash":"'.$hash.'"}';
+		$post = '{"Hash":"'.$hash.'"}'; 
 		$link = $host."/torrent/stat";
 		$default_opts = array( 'http'=>array('timeout' => 1,));
 		$default = stream_context_set_default($default_opts);
@@ -536,7 +548,7 @@ if( isset( $_REQUEST['debug'] )) print_r($url);echo"\r\n";
 		$PreloadSize = formatSize($PreloadSize);
 		
 		$ret = "$Status ■ Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
-		echo $ret;
+		echo $ret; return;
 		//return tsclient_Nmsg_content($ret,$img,$Status);
 }
 
@@ -557,6 +569,7 @@ function rss_tsstatus_content()
 		$html = postTorr($link,$post);
 		$html = @json_decode($html,true);
 		$html['FileStats'] = '';		
+		$name = @$html['title'];
 		if (!isset($html['TorrentStatusString'])) return tsclient_Nmsg_content("НЕТ ДАННЫХ !!!" );
 		$Status = @$html['TorrentStatusString'];
 		$TorrentSize = @$html['TorrentSize'];
@@ -592,8 +605,20 @@ function postTorr($url,$QUERY = null) {
 				'content' => $QUERY,
 			),
 		));
-	//post is string
 	$post = @file_get_contents($url, false, $context);
+	
+	$post = preg_replace ('|"Playlist":.*?",|s', '',$post);
+	$post = preg_replace ('|"Preload":.*?",|s', '',$post);
+	
+	////////////////////////
+	//$post = preg_replace ('|"Magnet":.*?",|s', '',$post);
+/*
+	$post = preg_replace ('|"AddTime":.*?,|s', '',$post);
+	$post = preg_replace ('|"Preload":.*?",|s', '',$post);
+	$post = preg_replace ('|"Status":.*?,|s', '',$post);
+	$post = preg_replace ('|"Playlist":.*?",|s', '',$post);
+	$post = preg_replace ('|"Info":.*?",|s', '',$post);
+*/
 	
 	return $post;
 }
