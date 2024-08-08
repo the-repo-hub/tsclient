@@ -421,11 +421,14 @@ if( isset( $_REQUEST['debug'] )) {print_r('$start_url ='.$start_url);echo"\r\n";
 	$baseUrl	= urlencode($host.$start_url);
 if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	if ($name!='') $TitleVideo = $name; else $TitleVideo = substr(strrchr($start_url, '/'), 1 );
-	// TODO remove it
+
+	// !!! TODO !!!
 	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
-//	$ThumbVideo = ground();
-	global $mosUrl;
+	$ThumbVideo = ground();
+	$mosUrl = getMosUrl();
+	// IT IS NECESSARY
+
 	//$ProxyVideo = $prx;
 	//include(tools_path.'/'. 'play.rss.php' );
 
@@ -435,7 +438,7 @@ if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	$rss = str_replace('idleImageHeightPC="4"','idleImageHeightPC="6"',$rss);
 	$rss = str_replace('idleImageXPC="89.5"','idleImageXPC="87.5"',$rss);
 	$rss = str_replace('idleImageYPC="89.5"','idleImageYPC="2"',$rss);
-	
+
 	$sсript  = "\r\n";
 	$sсript .= "</onEnter>\r\n\r\n<Tstatus>\r\n";
 	$sсript .= '	urlS = mosUrl + "?page=plr_tsstatus&amp;id=" + baseUrl; '."\r\n";
@@ -443,10 +446,10 @@ if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	$sсript .= 'popupTimeout = 10; popupHidePos = 0; barStatus = "status"; redrawDisplay("widget");'."\r\n";
 	$sсript .= "</Tstatus>\r\n";
 	$rss = str_replace('</onEnter>',$sсript,$rss);
-	
+
 	$sсript  = 'executeScript("NextVideo");'."\r\n";
 	$sсript .= '		} else if ( key == "video_ffwd" ) { executeScript("Tstatus"); '."\r\n";
-	
+
 	$rss = str_replace('executeScript("NextVideo");',$sсript,$rss);
 	$sсript  = '';
 	$sсript  = '<foregroundColor> <script> clr = "100:115:130"; if (barStatus == "status" ) clr = "50:200:255"; clr; </script> </foregroundColor>'."\r\n";
@@ -454,22 +457,22 @@ if( isset( $_REQUEST['debug'])) {	print_r($baseUrl);}
 	$sсript .= '		<offsetXPC><script> XPC = 22; if ( barStatus == "status" ) XPC = 9; XPC;</script></offsetXPC>'."\r\n";
 	$sсript .= '		<widthPC><script> wPC = 57 - popupHidePos; if ( barStatus == "status" ) wPC = 80; wPC;';
 	$rss = str_replace('<widthPC><script>57 - popupHidePos;',$sсript,$rss);
-	
+
 	$rss = str_replace('|| prgbarStatus == "buffering"','|| prgbarStatus == "buffering" || barStatus == "status" ',$rss);
 	$rss = str_replace('stateMid;','if ( barStatus == "status" ) stateMid = getURL(urlS); stateMid;',$rss);
 	$rss = str_replace('<hidePopup>','<hidePopup>'."\r\n".'	barStatus = "offstatus";',$rss);
 	$rss = str_replace('key == "display"))
 		{','key == "display"))
 		{'."\r\n".'			if (barStatus == "status" ) executeScript("hidePopup");',$rss);
-	
+
 	//<foregroundColor> <script> if ( -5 = popupHidePos ) color = "255:255:255"; color;</script> </foregroundColor>
-	
+
 	//<widthPC><script>57 - popupHidePos;
-	
-	
-	
+
+
+
 	//$rss = str_replace('idleImageYPC="89"','idleImageYPC="5"',$rss);
-	
+
 	//if (preg_match('|'.$id.'.*?"Viewed":(.*?)}|s',@$_SESSION['$html'],$r)>0) $r = $r[1]; else $r='';
 	//echo $rss;
 
