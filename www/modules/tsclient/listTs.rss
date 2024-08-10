@@ -15,7 +15,7 @@
 	
 if (rssIdd == "PLAY") {
 	dataImgs = null;
-	Iurl = "http://localhost/?page=tsView&amp;id=<<HASH>>";
+	Iurl = "http://localhost/?page=rss_tsclient_list&amp;hash=<<HASH>>";
 	
 	
     StrImgs = null;

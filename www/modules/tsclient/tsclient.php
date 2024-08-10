@@ -106,62 +106,6 @@ function ts_host()
 	return $host;
 }
 
-function load_history()
-{
-	global $config;
-	$history = '';
-	$flag = @$config['history'];
-	if ($flag=='rom') {
-		@include(DIR_NAME.'/history.php');
-	} else if ($flag=='ram') {
-		$history = @$_SESSION['$history'];
-	}
-	return $history;
-}
-
-function Save_history($id)
-{
-	global $config;
-	$flagHistory = @$config['history'];
-	if ($flagHistory=='off') return;
-	$history = "";
-	if ($flagHistory=='rom') {
-		$pth = DIR_NAME.'/history.php';
-		@include ($pth);
-	} else {
-		$history = @$_SESSION['$history'];
-	}
-
-	if ($id!='' && $id!=null ) {
-		$hash = explode('/',$id);
-		$kl = count($hash);
-		if ($kl==1) {
-			$hash = $id;
-			$history['last']  = $id;
-		} else {
-			$video = @$hash[$kl-1];
-			$hash  = @$hash[$kl-2];
-			if (isset($history['last'])) unset($history['last']);
-			if (isset($history[$hash])) unset($history[$hash]);
-			$history[$hash]  = $video;
-			$dl = 200;
-			if (count($history)>$dl)  $history = array_slice($history, $dl*(-1), $dl,true);
-			$history = array_merge(array('last' => $hash), $history);
-		}
-if( isset( $_REQUEST['debug'] ))  {
-	print_r("($hash ||| $video)");echo"\r\n";
-	print_r($history); echo"\r\n";
-}
-		
-		if ($flagHistory=='rom') {
-			@file_put_contents( $pth, '<?php $history = '.var_export( $history, true ).'; ?>' );
-		} else {
-			$_SESSION['$history'] = $history;
-		}
-		
-	}
-}
-
 function rnd() 
 {
 	global $config;
@@ -213,7 +157,6 @@ function rss_tsclient_content()
 	global $TShost;
 	global $nav_options;
 	global $ServName;
-
 	$_SESSION['rssIdd'] = "TORRENT";
 	$host = "http://".$TShost;
 	$link = $host."/torrents";
@@ -222,21 +165,18 @@ function rss_tsclient_content()
 	$html = @json_decode($html,true);
 	$Lurl = getMosUrl().'?page=rss_tsclient_list';
 	$ITEMS = PHP_EOL;
-	$history = load_history();
-	$lastUrl = @$history['last'];
-	$focus = 1; $i=0;
+	$i=0;
 	// $n is index of the line
 	foreach ($html as $n => $torrent) {
 		$i += 1;
 		$name 	= $torrent['title'];
 		$hash 	= $torrent['hash'];
-		if ($hash==$lastUrl) $focus = $i;
 		$data = @json_decode($torrent['data'], true);
 		$len = $torrent['torrent_size'];
 		if (($len+0)>0) $len = formatSize($len); else $len = 0;
 		$thumb = DIR_NAME."/img/folder.png";
 	$ITEM = '<item>
-        <title>'.count(getViewed($hash)).'/'.getKol($data).' series</title>
+        <title>'.getKol($data).' series</title>
         <description><![CDATA['.$name.']]></description>
 		<link>'.$Lurl.'&amp;id='.$i.'&amp;name='.$name.'&amp;hash='.$hash.'</link>
         <media:thumbnail url="'.$thumb.'" />
@@ -246,8 +186,7 @@ function rss_tsclient_content()
     </item>';
 		$ITEMS .= $ITEM;
 	}
-	$_SESSION['rssIdd'] = $focus;
-	
+
 	$gr = '0'.rnd();
 	//$gr = ground(); 
 	//$gr = file_get_contents('http://127.0.0.1/modules/tsclient/groung.php'); $gr = '0'. $gr;
@@ -281,18 +220,13 @@ function rss_tsclient_list_content()
 	global $TShost;
 	global $nav_options;
 	$host = "http://".$TShost;
-	if (PGST=='mem' && isset($_SESSION['$html'])) $html = $_SESSION['$html']; else
-		{
-			$link = $host."/torrents";
-			$post = '{"action":"list"}';
-			$html = postTorr($link, $post);
-			if ($html!='') $_SESSION['$html'] = $html;
-		}
-	$html = @json_decode($html,true);
-	$Lurl = getMosUrl().'?page=tsclient_play&amp;kl=0';
+	$link = $host."/torrents";
+	$post = '{"action":"list"}';
+	$html = postTorr($link, $post);
+	$html = json_decode($html,true);
+	$Lurl = getMosUrl().'?page=tsclient_play';
 	$ITEMS = PHP_EOL;
 	$i = 0; $focus = 0;
-
 	// get necessary data by hash
 	$hash = $_REQUEST['hash'];
 	$series = getObjectByHash($hash, $html);
@@ -323,8 +257,6 @@ function rss_tsclient_list_content()
 		</item>';
 		$ITEMS .= $ITEM;
 	}
-	logger($ITEM);
-	$ITEMS = str_replace('kl=0', "kl=$i",$ITEMS);
 	$_SESSION['rssIdd'] = $focus;
 //if( isset( $_REQUEST['debug'])) {	print_r($ITEMS);}
 	//$gr = '0'.rand(1, 4);
@@ -380,7 +312,6 @@ function tsclient_play_content()
 	global $TShost;
 	$host = "http://".$TShost;
 	$baseUrl	= urlencode($host."/play/".$hash."/".$id);
-	logger("\n\nTSCLIENT:\n".serialize($_REQUEST)."\n".$baseUrl);
 	// TODO NB: this is necessary, even it is not in use, dont delete this
 	$TitleVideo = $name;
 	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.'));
@@ -478,7 +409,6 @@ function postTorr($url,$QUERY = null) {
 			'http' => array(
 				'method' => 'POST',
 				'header' => 'Content-Type: application/x-www-form-urlencoded' . PHP_EOL.
-				'User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'. PHP_EOL.
 				'X-Requested-With: XMLHttpRequest',
 				'content' => $QUERY,
 			),
