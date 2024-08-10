@@ -167,6 +167,7 @@ function rss_tsclient_content()
 	// $n is index of the line
 	foreach ($html as $n => $torrent) {
 		$name 	= $torrent['title'];
+		if (!$name) continue;
 		$hash 	= $torrent['hash'];
 		$data = @json_decode($torrent['data'], true);
 		$len = formatSize($torrent['torrent_size']);
