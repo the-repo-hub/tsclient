@@ -50,11 +50,13 @@
 //function getMosUrl() {
 //	return "http://192.168.1.10/";
 //}
-function getTorrents()
+function getTorrents($hash=null)
 {
 	$host = "http://".ts_host();
 	$link = $host."/torrents";
-	$post = '{"action":"list"}';
+	if ($hash) $post = '{"action":"get","hash":"'.$hash.'"}';
+	else $post = '{"action":"list"}';
+
 	$html = postTorr($link, $post);
 	$html = json_decode($html,true);
 	return $html;
@@ -210,13 +212,12 @@ function rss_tsclient_list_content()
 	//List of series in torrent
 {
 	$_SESSION['rssIdd'] = "LIST";
+	$hash = $_REQUEST['hash'];
 	global $nav_options;
-	$html = getTorrents();
+	$html = getTorrents($hash);
 	$Lurl = getMosUrl().'?page=tsclient_play';
 	$ITEMS = PHP_EOL;
-	$series = $html[$_REQUEST['id']-1];
-	$files = @json_decode($series['data'], true)['TorrServer']['Files'];
-	$hash = $_REQUEST['hash'];
+	$files = json_decode($html['data'], true)['TorrServer']['Files'];
 	$viewed = getViewed($hash);
 	$i = 0;
 	foreach ($files as $file) {
@@ -284,9 +285,7 @@ function rss_tsclient_list_content()
 function tsView_content()
 {
 	$hash = $_REQUEST['hash'];
-	$index = $_REQUEST['id']-1;
-	$html = getTorrents();
-	$html=$html[$index];
+	$html = getTorrents($hash);
 	$files = json_decode($html['data'],true)['TorrServer']['Files'];
 	$viewed = getViewed($hash);
 	$IMGS = ''; $i = 1;
@@ -328,7 +327,7 @@ function tsclient_play_content()
 
 	$sсript  = "\r\n";
 	$sсript .= "</onEnter>\r\n\r\n<Tstatus>\r\n";
-	$sсript .= '	urlS = mosUrl + "?page=plr_tsstatus&amp;id="+'.$_REQUEST['catalog_id'].'; '."\r\n";
+	$sсript .= '	urlS = mosUrl + "?page=plr_tsstatus&amp;hash="+"'.$hash.'"; '."\r\n";
 	$sсript .= '	executeScript("hidePopup"); stateMid ="Status Torrent"; stateLeft = ""; stateRight = ""; '; #stateMid = getURL(urlS);
 	$sсript .= 'popupTimeout = 10; popupHidePos = 0; barStatus = "status"; redrawDisplay("widget");'."\r\n";
 	$sсript .= "</Tstatus>\r\n";
@@ -338,7 +337,6 @@ function tsclient_play_content()
 	$sсript .= '		} else if ( key == "video_ffwd" ) { executeScript("Tstatus"); '."\r\n";
 
 	$rss = str_replace('executeScript("NextVideo");',$sсript,$rss);
-	$sсript  = '';
 	$sсript  = '<foregroundColor> <script> clr = "100:115:130"; if (barStatus == "status" ) clr = "50:200:255"; clr; </script> </foregroundColor>'."\r\n";
 	$sсript .= '		<fontSize><script> font = 12; if ( barStatus == "status" ) font = 13; font</script></fontSize>'."\r\n";
 	$sсript .= '		<offsetXPC><script> XPC = 22; if ( barStatus == "status" ) XPC = 9; XPC;</script></offsetXPC>'."\r\n";
@@ -372,8 +370,7 @@ if( isset( $_REQUEST['debug'])) {	print_r($path); echo "\r\n";}
 
 function plr_tsstatus_content()
 {
-	$html = getTorrents();
-	$html = $html[$_REQUEST['id']-1];
+	$html = getTorrents($_REQUEST['hash']);
 	if (!isset($html['total_peers'])) { echo "НЕТ ДАННЫХ !!!"; return; }
 	$TotalPeers = @$html['total_peers'];
 	$ActivePeers = @$html['active_peers'];
