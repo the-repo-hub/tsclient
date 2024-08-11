@@ -295,6 +295,7 @@ function tsView_content()
 	$IMGS = '<inf><imgs><c>'.$i.'</c></imgs></inf>'.PHP_EOL.'<data>'.PHP_EOL.$IMGS.'</data>';
 	echo $IMGS;
 }
+
 function tsclient_play_content() 
 {
 	$_SESSION['rssIdd'] = "PLAY";
@@ -360,11 +361,10 @@ if( isset( $_REQUEST['debug'])) {	print_r($path); echo "\r\n";}
 	echo $id.PHP_EOL.'0'.PHP_EOL;
 }
 
-
-function plr_tsstatus_content()
+function getPeersMessage($hash)
 {
-	$html = getTorrents($_REQUEST['hash']);
-	if (!isset($html['total_peers'])) { echo "НЕТ ДАННЫХ !!!"; return; }
+	$html = getTorrents($hash);
+	if (!isset($html['total_peers'])) return "НЕТ ДАННЫХ !!!";
 	$TotalPeers = @$html['total_peers'];
 	$ActivePeers = @$html['active_peers'];
 	$ConnectedSeeders = @$html['connected_seeders'];
@@ -372,8 +372,32 @@ function plr_tsstatus_content()
 	$DownloadSpeed = formatSize($DownloadSpeed);
 	$PreloadSize = @$html['preloaded_bytes'];
 	$PreloadSize = formatSize($PreloadSize);
-	$ret = "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
-	echo $ret;
+	return "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
+}
+
+function plr_tsstatus_content()
+{
+	echo getPeersMessage($_REQUEST['hash']);
+}
+
+function rss_tsstatus_content()
+{
+	$hash = $_REQUEST['hash'];
+	$_SESSION['rssIdd'] = "STATUS";
+	$message = getPeersMessage($hash);
+	if ($message == "НЕТ ДАННЫХ !!!"){
+		// because in this case, torrent status will be "torrent in db" and peers message will not contain information
+		// wait for wake
+		sleep(1);
+		// doing second request, he must be woken
+		$message = getPeersMessage($hash);
+		if ($message == "НЕТ ДАННЫХ !!!"){
+			tsclient_Nmsg_content($message, null, 'ОШИБКА СЕТИ !!!');
+		}
+	}
+	else {
+		 tsclient_Nmsg_content($message, DIR_NAME."/img/ts.png", "Torrent is working");
+	}
 }
 
 function postTorr($url,$QUERY = null) {
@@ -427,31 +451,18 @@ function formatSize($bytes)
 		return $bytes;
 }
 
-function tsclient_msg_content($msg = null, $image = null)
-{
-		$_SESSION['rssIdd'] = "MSG";
-		if (empty($msg)) $msg = 'Видео недоступно или удалено!!!';
-		if( isset( $_REQUEST['txt'])) $msg = $_REQUEST['txt'];
-		if( isset( $_REQUEST['img'])) $image = $_REQUEST['img'];
-		include(tools_path.'/'. 'msg.php' );
-		$view = new rssMsgView;
-		if (!empty($image)) $view->currentImage = $image;
-		$view->currentMsg = $msg;
-		$view->showRss();
-}
-
 function tsclient_Nmsg_content($msg = null, $image = null, $name = "Сообщение")
 {
 	$_SESSION['rssIdd'] = "MSG";
-	if (empty($msg)) $msg = 'Ошибка доступа';
-	if (isset($_REQUEST['txt'])) $msg = $_REQUEST['txt'];
-	if (isset($_REQUEST['img'])) $image = $_REQUEST['img'];
 	$pth = tools_path . '/' . 'msg.php';
 	$rssmsg = file_get_contents($pth);
 	$rssmsg = str_replace('>Сообщение</', '>' . $name . '</', $rssmsg);
 	$rssmsg = str_replace('backgroundColor="41:41:41"', 'backgroundColor="40:50:60"', $rssmsg);
-
 	eval('?>' . $rssmsg);
+	$view = new rssMsgView;
+	if (!empty($image)) $view->currentImage = $image;
+	$view->currentMsg = $msg;
+	$view->showRss();
 }
 
 function tsbackup_content()
