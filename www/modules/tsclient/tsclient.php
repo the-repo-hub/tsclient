@@ -354,30 +354,34 @@ if( isset( $_REQUEST['debug'])) {	print_r($path); echo "\r\n";}
 	echo $id.PHP_EOL.'0'.PHP_EOL;
 }
 
-function getPeersMessageForTorrents($hash)
+function getPeersMessage($hash, $needPreload=false)
 {
-	$html = getTorrents($hash);
-	if (!isset($html['total_peers'])) return "НЕТ ДАННЫХ !!!";
+	$html = array();
+	$c = 5;
+	while (!isset($html['total_peers'])){
+		$html = getTorrents($hash);
+		// because torrent status may be "torrent in db" and peers message will not contain information
+		// wait for wake
+		sleep(1);
+		$c--;
+		if ($c < 0) return "Network error";
+	}
 	$TotalPeers = @$html['total_peers'];
 	$ActivePeers = @$html['active_peers'];
 	$ConnectedSeeders = @$html['connected_seeders'];
 	$DownloadSpeed = @$html['download_speed'];
 	$DownloadSpeed = formatSize($DownloadSpeed);
+	if ($needPreload){
+		$PreloadSize = @$html['preloaded_bytes'];
+		$PreloadSize = formatSize($PreloadSize);
+		return "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
+	}
 	return "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers SPEED( $DownloadSpeed )";
 }
 
 function plr_tsstatus_content()
 {
-	$html = getTorrents($_REQUEST['hash']);
-	if (!isset($html['total_peers'])) return "НЕТ ДАННЫХ !!!";
-	$TotalPeers = @$html['total_peers'];
-	$ActivePeers = @$html['active_peers'];
-	$ConnectedSeeders = @$html['connected_seeders'];
-	$DownloadSpeed = @$html['download_speed'];
-	$DownloadSpeed = formatSize($DownloadSpeed);
-	$PreloadSize = @$html['preloaded_bytes'];
-	$PreloadSize = formatSize($PreloadSize);
-	echo "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
+	echo getPeersMessage($_REQUEST['hash'], true);
 }
 
 function rss_tsstatus_content()
@@ -390,17 +394,9 @@ function rss_tsstatus_content()
 		$hash = getTorrents()[$index]['hash'];
 	}
 	$_SESSION['rssIdd'] = "STATUS";
-	$message = "НЕТ ДАННЫХ !!!";
-	$c = 5;
-	while ($message == "НЕТ ДАННЫХ !!!"){
-		$message = getPeersMessageForTorrents($hash);
-		// because torrent status may be "torrent in db" and peers message will not contain information
-		// wait for wake
-		sleep(1);
-		$c--;
-		if ($c < 0) return tsclient_Nmsg_content($message, null, 'ОШИБКА СЕТИ !!!');
-	}
-	tsclient_Nmsg_content($message, DIR_NAME."/img/ts.png", "Torrent is working");
+	$message = getPeersMessage($hash);
+	if($message == "Network error") tsclient_Nmsg_content($message);
+	else tsclient_Nmsg_content($message, DIR_NAME."/img/ts.png");
 }
 
 function postTorr($url,$QUERY = null) {
@@ -413,15 +409,6 @@ function postTorr($url,$QUERY = null) {
 			),
 		));
 	return file_get_contents($url, false, $context);
-}
-
-function tsinfo_content() 
-{
-global $nav_options;
-if( isset( $_REQUEST['debug'] )) print_r($nav_options);echo"\r\n";
-if( isset( $_REQUEST['debug'] )) print_r($_SESSION);echo"\r\n";
-//if( isset( $_REQUEST['debug'] )) print_r($_ENV);echo"\r\n";
-
 }
 
 function formatSize($bytes) 
@@ -454,13 +441,12 @@ function formatSize($bytes)
 		return $bytes;
 }
 
-
-function tsclient_Nmsg_content($msg = null, $image = null, $name = "Сообщение")
+function tsclient_Nmsg_content($msg, $image = null)
 {
 	$_SESSION['rssIdd'] = "MSG";
 	$pth = tools_path . '/' . 'msg.php';
 	$rssmsg = file_get_contents($pth);
-	$rssmsg = str_replace('>Сообщение</', '>' . $name . '</', $rssmsg);
+	$rssmsg = str_replace('>Сообщение</', '>' . '</', $rssmsg);
 	$rssmsg = str_replace('backgroundColor="41:41:41"', 'backgroundColor="40:50:60"', $rssmsg);
 	eval('?>' . $rssmsg);
 	$view = new rssMsgView;
@@ -468,26 +454,4 @@ function tsclient_Nmsg_content($msg = null, $image = null, $name = "Сообще
 	$view->currentMsg = $msg;
 	$view->showRss();
 }
-
-function tsbackup_content()
-{
-
-	if( isset( $_REQUEST['mg'])) $mg = $_REQUEST['mg'];
-	if( isset( $_REQUEST['nm'])) $nm = $_REQUEST['nm'];
-	if (!empty($nm) && !empty($mg)) {
-		$pth = dir_name.'/backup.php';
-		@include ($pth);
-		$backup[$mg] = $nm;
-		@file_put_contents( $pth, '<?php $backup = '.var_export( $backup, true ).'; ?>' );
-	}
-
-}
-
-
-function tsclient_gpio_content()
-{
-	$output = shell_exec("gpio 121 0");
-	$output = shell_exec("gpio 121 1");
-}
-
 ?>
