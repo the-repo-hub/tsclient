@@ -301,44 +301,11 @@ function tsclient_play_content()
 	$id = $_REQUEST['id'];
 	$name = $_REQUEST['name'];
 	$hash = $_REQUEST['hash'];
-	$host = "http://".ts_host();
-	$baseUrl	= urlencode($host."/play/".$hash."/".$id);
-	// TODO NB: this is necessary, even it is not in use, dont delete this
-	$TitleVideo = $name;
-	$TitleVideo = substr($TitleVideo, 0, strrpos($TitleVideo, '.'));
+	$baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
+	$TitleVideo = substr($name, 0, strrpos($name, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
-	$mosUrl = getMosUrl();
-	//$ProxyVideo = $prx;
-	//include(tools_path.'/'. 'play.rss.php' );
 	global $playRSS;
-	$rss = $playRSS;
-	$rss = preg_replace ('|<idleImage>.*?<previewWindow|s', idleImage()."\r\n<previewWindow",$rss);
-	$rss = str_replace('idleImageWidthPC="4"','idleImageWidthPC="5"',$rss);
-	$rss = str_replace('idleImageHeightPC="4"','idleImageHeightPC="6"',$rss);
-	$rss = str_replace('idleImageXPC="89.5"','idleImageXPC="87.5"',$rss);
-	$rss = str_replace('idleImageYPC="89.5"','idleImageYPC="2"',$rss);
-
-	$sсript  = "\r\n";
-	$sсript .= "</onEnter>\r\n\r\n<Tstatus>\r\n";
-	$sсript .= '	urlS = mosUrl + "?page=plr_tsstatus&amp;hash="+"'.$hash.'"; '."\r\n";
-	$sсript .= '	executeScript("hidePopup"); stateMid ="Status Torrent"; stateLeft = ""; stateRight = ""; '; #stateMid = getURL(urlS);
-	$sсript .= 'popupTimeout = 10; popupHidePos = 0; barStatus = "status"; redrawDisplay("widget");'."\r\n";
-	$sсript .= "</Tstatus>\r\n";
-	$rss = str_replace('</onEnter>',$sсript,$rss);
-	$sсript  = 'executeScript("NextVideo");'."\r\n";
-	$sсript .= '		} else if ( key == "display" ) { executeScript("Tstatus"); '."\r\n";
-	$rss = str_replace('executeScript("NextVideo");',$sсript,$rss);
-	$sсript  = '<foregroundColor> <script> clr = "100:115:130"; if (barStatus == "status" ) clr = "50:200:255"; clr; </script> </foregroundColor>'."\r\n";
-	$sсript .= '		<fontSize><script> font = 12; if ( barStatus == "status" ) font = 13; font</script></fontSize>'."\r\n";
-	$sсript .= '		<offsetXPC><script> XPC = 22; if ( barStatus == "status" ) XPC = 9; XPC;</script></offsetXPC>'."\r\n";
-	$sсript .= '		<widthPC><script> wPC = 57 - popupHidePos; if ( barStatus == "status" ) wPC = 80; wPC;';
-	$rss = str_replace('<widthPC><script>57 - popupHidePos;',$sсript,$rss);
-
-	$rss = str_replace('|| prgbarStatus == "buffering"','|| prgbarStatus == "buffering" || barStatus == "status" ',$rss);
-	$rss = str_replace('stateMid;','if ( barStatus == "status" ) stateMid = getURL(urlS); stateMid;',$rss);
-	$rss = str_replace('<hidePopup>','<hidePopup>'."\r\n".'	barStatus = "offstatus";',$rss);
-	eval('?>' . $rss);
-	
+	eval('?>' . $playRSS);
 }
 
 function tsclient_get_content()
@@ -360,6 +327,7 @@ function getPeersMessage($hash, $needPreload=false)
 	$c = 5;
 	while (!isset($html['total_peers'])){
 		$html = getTorrents($hash);
+		if(isset($html['total_peers'])) break;
 		// because torrent status may be "torrent in db" and peers message will not contain information
 		// wait for wake
 		sleep(1);

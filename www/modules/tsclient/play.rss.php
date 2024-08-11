@@ -3,7 +3,7 @@
 	header( "Content-type: text/plain" );
 	echo '<?xml version="1.0" encoding="utf-8"?>' .PHP_EOL;
 	echo '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">' .PHP_EOL;
-	
+	if (!isset($hash)) return;
 	if (!isset($baseUrl)) {
 		$baseUrl	= 'http%3A%2F%2F37.220.36.15%2Fvideo%2F327a2776bfd23ed2%2Fiframe';
 		$TitleVideo = 'Пластилиновая ворона (ТВ)';
@@ -27,12 +27,20 @@
 	srvName		= "<?= $servicename ?>";
 	proxy		=  <?= $ProxyVideo ?>; if ( proxy == 1 ) captionColor = "0:255:255"; else captionColor = "255:230:0";
 	logo		= "<?= $logo ?>";
+    hash		= "<?= $hash ?>";
 	doseek		=  0;
 	isNSRtr		=  0;
 	executeScript("initData");
 	setRefreshTime(200);
 	cancelIdle();
+
 </onEnter>
+
+<Tstatus>
+	urlS = mosUrl + "?page=plr_tsstatus&amp;hash="+ hash;
+	executeScript("hidePopup"); stateMid ="Status Torrent"; stateLeft = ""; stateRight = ""; popupTimeout = 10; popupHidePos = 0; barStatus = "status"; redrawDisplay("widget");
+</Tstatus>
+
 
 <SecondToString>
 	file = SecondTime;
@@ -250,6 +258,7 @@
 </updateSeekingPopup>
 
 <hidePopup>
+	barStatus = "offstatus";
 	popupTimeout  = 0;
 	popupHidePos  = 100;
 	wishedPos     = -1;
@@ -303,17 +312,19 @@
 	if (isNSRtr == 1) postMessage("return");
 </GetVideo>
 
-<mediaDisplay name="threePartsView" idleImageXPC="89.5" idleImageYPC="89" idleImageWidthPC="4" idleImageHeightPC="4" itemPerPage="0">
+<mediaDisplay name="threePartsView" idleImageXPC="87.5" idleImageYPC="89" idleImageWidthPC="5" idleImageHeightPC="6" itemPerPage="0">
 	<!-- idleImage -->
-	<idleImage><?= getRssImages() ?>idle01.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle02.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle03.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle04.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle05.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle06.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle07.png</idleImage>
-    <idleImage><?= getRssImages() ?>idle08.png</idleImage>
-	<previewWindow windowColor="0:0:0" offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100"></previewWindow>
+
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle1.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle2.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle3.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle4.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle5.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle6.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle7.png</idleImage>
+<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle8.png</idleImage>
+
+<previewWindow windowColor="0:0:0" offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100"></previewWindow>
 	<-- preview --->
 	<image redraw="yes"> <offsetXPC>10</offsetXPC> <offsetYPC>12</offsetYPC> <heightPC>72</heightPC>
 		<widthPC><script>80 - previewHidePos;</script></widthPC>
@@ -359,7 +370,7 @@
 		<widthPC><script>17 - popupHidePos;</script></widthPC>
 		<script>
 				SecondTime = playElapsed; executeScript("SecondToString"); stateCur = SecondTime;
-				if (prgbarStatus == "preparing" || prgbarStatus == "buffering") stateLeft; 
+				if (prgbarStatus == "preparing" || prgbarStatus == "buffering" || barStatus == "status" ) stateLeft;
 					else
 				if ( diff == 0) stateCur; else stateCur + "●" + stateLeft;
 		</script>
@@ -369,8 +380,11 @@
 		<script>stateRight;</script>
 	</text>
 	<text redraw="yes" offsetXPC="22" offsetYPC="92.0" widthPC="55" fontSize="12" heightPC="3.5" foregroundColor="100:115:130" align="center">
-		<widthPC><script>57 - popupHidePos;</script></widthPC>
-		<script>stateMid;</script>
+		<foregroundColor> <script> clr = "100:115:130"; if (barStatus == "status" ) clr = "50:200:255"; clr; </script> </foregroundColor>
+		<fontSize><script> font = 12; if ( barStatus == "status" ) font = 13; font</script></fontSize>
+		<offsetXPC><script> XPC = 22; if ( barStatus == "status" ) XPC = 9; XPC;</script></offsetXPC>
+		<widthPC><script> wPC = 57 - popupHidePos; if ( barStatus == "status" ) wPC = 80; wPC;</script></widthPC>
+		<script>if ( barStatus == "status" ) stateMid = getURL(urlS); stateMid;</script>
 	</text>
 
 <onUserInput>
@@ -406,6 +420,7 @@
 			executeScript("PrevVideo");
 		} else if (key == "pagedown" &amp;&amp; nxtBt == 1 ) {
 			executeScript("NextVideo");
+		} else if (key == "display") { executeScript("Tstatus");
 		} else if (key == "menu") {
 			if (previewHidePos == 0) previewHidePos = 100; else previewHidePos = 0;
 		} else if (key == "video_frwd" || key == "zoom") {
