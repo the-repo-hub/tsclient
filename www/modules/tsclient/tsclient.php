@@ -354,7 +354,7 @@ if( isset( $_REQUEST['debug'])) {	print_r($path); echo "\r\n";}
 	echo $id.PHP_EOL.'0'.PHP_EOL;
 }
 
-function getPeersMessage($hash)
+function getPeersMessageForTorrents($hash)
 {
 	$html = getTorrents($hash);
 	if (!isset($html['total_peers'])) return "НЕТ ДАННЫХ !!!";
@@ -363,14 +363,21 @@ function getPeersMessage($hash)
 	$ConnectedSeeders = @$html['connected_seeders'];
 	$DownloadSpeed = @$html['download_speed'];
 	$DownloadSpeed = formatSize($DownloadSpeed);
-	$PreloadSize = @$html['preloaded_bytes'];
-	$PreloadSize = formatSize($PreloadSize);
-	return "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
+	return "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers SPEED( $DownloadSpeed )";
 }
 
 function plr_tsstatus_content()
 {
-	echo getPeersMessage($_REQUEST['hash']);
+	$html = getTorrents($_REQUEST['hash']);
+	if (!isset($html['total_peers'])) return "НЕТ ДАННЫХ !!!";
+	$TotalPeers = @$html['total_peers'];
+	$ActivePeers = @$html['active_peers'];
+	$ConnectedSeeders = @$html['connected_seeders'];
+	$DownloadSpeed = @$html['download_speed'];
+	$DownloadSpeed = formatSize($DownloadSpeed);
+	$PreloadSize = @$html['preloaded_bytes'];
+	$PreloadSize = formatSize($PreloadSize);
+	echo "Peers:[ $ConnectedSeeders ] $ActivePeers / $TotalPeers ■ Preload( $PreloadSize ) ■ SPEED( $DownloadSpeed )";
 }
 
 function rss_tsstatus_content()
@@ -386,7 +393,7 @@ function rss_tsstatus_content()
 	$message = "НЕТ ДАННЫХ !!!";
 	$c = 5;
 	while ($message == "НЕТ ДАННЫХ !!!"){
-		$message = getPeersMessage($hash);
+		$message = getPeersMessageForTorrents($hash);
 		// because torrent status may be "torrent in db" and peers message will not contain information
 		// wait for wake
 		sleep(1);
