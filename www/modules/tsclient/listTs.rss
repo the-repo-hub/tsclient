@@ -123,8 +123,8 @@ if (rssIdd == "PLAY") {
         if (3 == 5) {
             /* stub section, real logic comes from hot keys */
         }
-        else if (key == "display" || (key == "video_ffwd") ) {
-			url = "http://localhost/?page=rss_tsstatus&amp;hash=<<HASH>>";
+        else if (key == "display") {
+			url = "http://localhost/?page=rss_tsstatus&amp;index=" + getFocusItemIndex() + "&amp;hash=<<HASH>>";
         }
 		else if (key == "menu1") {
             url = "http://localhost/?page=rss_tsclient";

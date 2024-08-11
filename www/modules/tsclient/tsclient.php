@@ -29,7 +29,7 @@
 	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
 	$ServName = file_get_contents("http://".ts_host()."/echo", 0, $ctx);
 	$listTsRSS = file_get_contents(DIR_NAME."/listTs.rss");
-	$playRSS = file_get_contents(tools_path."/play.rss.php");
+	$playRSS = file_get_contents(DIR_NAME."/play.rss.php");
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
@@ -49,16 +49,14 @@
 //function getMosUrl() {
 //	return "http://192.168.1.10/";
 //}
+//rss_tsstatus_content();
 function getTorrents($hash=null)
 {
 	$host = "http://".ts_host();
 	$link = $host."/torrents";
 	if ($hash) $post = '{"action":"get","hash":"'.$hash.'"}';
 	else $post = '{"action":"list"}';
-
-	$html = postTorr($link, $post);
-	$html = json_decode($html,true);
-	return $html;
+	return json_decode(postTorr($link, $post),true);
 }
 
 function getViewed($hash){
@@ -190,6 +188,7 @@ function rss_tsclient_content()
 	if ($i == 0)  $rss = str_replace('<!-- header -->',
 					'<!-- header -->'.PHP_EOL.'<image offsetXPC="36.5" offsetYPC="23" widthPC="32" heightPC="45">'.str_replace('tsclient','bigmanTools',DIR_NAME)."/img/error.png".'</image>'.PHP_EOL,$rss);
 	$rss = str_replace('widthPC="35.5"','widthPC="62"',$rss);
+	$rss = str_replace("<<HASH>>","",$rss);
 	$rss = str_replace("<<IMGGROUND>>",DIR_NAME."/img/ground$gr.jpg",$rss);
 	$rss = str_replace("<<IMGCHANEL>>",DIR_NAME."/img/ts.png",$rss);
 	$rss = str_replace("<<IMGPTH>>",DIR_NAME."/img/",$rss);
@@ -326,10 +325,8 @@ function tsclient_play_content()
 	$sсript .= 'popupTimeout = 10; popupHidePos = 0; barStatus = "status"; redrawDisplay("widget");'."\r\n";
 	$sсript .= "</Tstatus>\r\n";
 	$rss = str_replace('</onEnter>',$sсript,$rss);
-
 	$sсript  = 'executeScript("NextVideo");'."\r\n";
-	$sсript .= '		} else if ( key == "video_ffwd" ) { executeScript("Tstatus"); '."\r\n";
-
+	$sсript .= '		} else if ( key == "display" ) { executeScript("Tstatus"); '."\r\n";
 	$rss = str_replace('executeScript("NextVideo");',$sсript,$rss);
 	$sсript  = '<foregroundColor> <script> clr = "100:115:130"; if (barStatus == "status" ) clr = "50:200:255"; clr; </script> </foregroundColor>'."\r\n";
 	$sсript .= '		<fontSize><script> font = 12; if ( barStatus == "status" ) font = 13; font</script></fontSize>'."\r\n";
@@ -340,10 +337,6 @@ function tsclient_play_content()
 	$rss = str_replace('|| prgbarStatus == "buffering"','|| prgbarStatus == "buffering" || barStatus == "status" ',$rss);
 	$rss = str_replace('stateMid;','if ( barStatus == "status" ) stateMid = getURL(urlS); stateMid;',$rss);
 	$rss = str_replace('<hidePopup>','<hidePopup>'."\r\n".'	barStatus = "offstatus";',$rss);
-	$rss = str_replace('key == "display"))
-		{','key == "display"))
-		{'."\r\n".'			if (barStatus == "status" ) executeScript("hidePopup");',$rss);
-
 	eval('?>' . $rss);
 	
 }
@@ -382,22 +375,25 @@ function plr_tsstatus_content()
 
 function rss_tsstatus_content()
 {
-	$hash = $_REQUEST['hash'];
-	$_SESSION['rssIdd'] = "STATUS";
-	$message = getPeersMessage($hash);
-	if ($message == "НЕТ ДАННЫХ !!!"){
-		// because in this case, torrent status will be "torrent in db" and peers message will not contain information
-		// wait for wake
-		sleep(1);
-		// doing second request, he must be woken
-		$message = getPeersMessage($hash);
-		if ($message == "НЕТ ДАННЫХ !!!"){
-			tsclient_Nmsg_content($message, null, 'ОШИБКА СЕТИ !!!');
-		}
+	if ($_REQUEST['hash'] != "") {
+		$hash = $_REQUEST['hash'];
 	}
 	else {
-		 tsclient_Nmsg_content($message, DIR_NAME."/img/ts.png", "Torrent is working");
+		$index = $_REQUEST['index'];
+		$hash = getTorrents()[$index]['hash'];
 	}
+	$_SESSION['rssIdd'] = "STATUS";
+	$message = "НЕТ ДАННЫХ !!!";
+	$c = 5;
+	while ($message == "НЕТ ДАННЫХ !!!"){
+		$message = getPeersMessage($hash);
+		// because torrent status may be "torrent in db" and peers message will not contain information
+		// wait for wake
+		sleep(1);
+		$c--;
+		if ($c < 0) return tsclient_Nmsg_content($message, null, 'ОШИБКА СЕТИ !!!');
+	}
+	tsclient_Nmsg_content($message, DIR_NAME."/img/ts.png", "Torrent is working");
 }
 
 function postTorr($url,$QUERY = null) {
@@ -450,6 +446,7 @@ function formatSize($bytes)
 
 		return $bytes;
 }
+
 
 function tsclient_Nmsg_content($msg = null, $image = null, $name = "Сообщение")
 {
