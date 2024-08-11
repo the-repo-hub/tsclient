@@ -26,11 +26,10 @@
 			"ground" => 5,
 		  );
 	@include (DIR_NAME.'/ts.config.php');
-	$TShost = ts_host();
 	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
-	$ServName = file_get_contents("http://".$TShost."/echo", 0, $ctx);
+	$ServName = file_get_contents("http://".ts_host()."/echo", 0, $ctx);
 	$listTsRSS = file_get_contents(DIR_NAME."/listTs.rss");
-	$playRSS = file_get_contents(tools_path.'/'. 'play.rss.php');
+	$playRSS = file_get_contents(DIR_NAME."/play.rss.php");
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
@@ -84,7 +83,7 @@ function isFilm($name)
 	return true;
 }
 
-function getKol($data)
+function getFilmCount($data)
 {
 	$files = $data['TorrServer']['Files'];
 	$count = 0;
@@ -173,9 +172,9 @@ function rss_tsclient_content()
 		$len = formatSize($torrent['torrent_size']);
 		$thumb = DIR_NAME."/img/folder.png";
 	$ITEM = '<item>
-        <title>'.getKol($data).' series</title>
+        <title>'.getFilmCount($data).' series</title>
         <description><![CDATA['.$name.']]></description>
-		<link>'.$Lurl.'&amp;id='.$i.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'</link>
+		<link>'.$Lurl.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'</link>
         <media:thumbnail url="'.$thumb.'" />
         <info>'.$name.'</info>
         <category>Torrent</category>
@@ -238,7 +237,7 @@ function rss_tsclient_list_content()
 		$ITEM = PHP_EOL.'<item>
 			<title>'.$name.'</title>
 			<description><![CDATA['.$name.']]></description>
-			<link>'.$Lurl.'&amp;id='.$i.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'&amp;catalog_id='.$_REQUEST['id'].'</link>
+			<link>'.$Lurl.'&amp;id='.$i.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'</link>
 			<media:thumbnail url="'.$thumb.'" />
 			<info>'.$name.'</info>
 			<category>TorrentList</category>
@@ -246,13 +245,10 @@ function rss_tsclient_list_content()
 		</item>';
 		$ITEMS .= $ITEM;
 	}
-//if( isset( $_REQUEST['debug'])) {	print_r($ITEMS);}
-	//$gr = '0'.rand(1, 4);
 	$gr = '0'.rnd();
 	global $listTsRSS;
 	$rss = $listTsRSS;
 	$rss = str_replace('"0:154:236"','"216:134:0"',$rss);
-	//$rss = str_replace('widthPC="35.5"','widthPC="65" lines="2"',$rss);
 	$title = $_REQUEST['name'];
 	if (mb_strlen($title)>40) {
 		$rss = str_replace('<text offsetYPC="3.3" heightPC="4" fontSize="14" offsetXPC="7.7"  widthPC="35.5"',
@@ -264,10 +260,8 @@ function rss_tsclient_list_content()
 		$rss = str_replace('widthPC="35.5"', 'widthPC="62"',$rss);
 	}
 	$rss = str_replace("<<HASH>>",$hash,$rss);
-	//$rss = str_replace('getItemInfo("media:thumbnail")',$inf,$rss);
 	$rss = str_replace('"TORENT"','"LIST"',$rss);
 	$rss = str_replace("<<IMGGROUND>>",DIR_NAME."/img/ground$gr.jpg",$rss);
-	//$rss = str_replace("<<IMGCHANEL>>",str_replace('tsclient','bigmanTools',DIR_NAME)."/img/folder.png",$rss);
 	$rss = str_replace("<<IMGCHANEL>>",DIR_NAME."/img/folder.png",$rss);
 	$rss = str_replace("<<IMGPTH>>",DIR_NAME."/img/",$rss);
 	$rss = str_replace("<<PROGPTH>>",DIR_NAME."/",$rss);
@@ -275,7 +269,6 @@ function rss_tsclient_list_content()
 	$rss = str_replace("<<VERPRG>>",SRV_NAME,$rss);
 	$rss = str_replace("<<HOST>>",$title,$rss);
 	$rss = str_replace("<<ITEMS>>",$ITEMS,$rss);
-	$rss = str_replace("<<ID>>",$_REQUEST['id'],$rss);
 	$rss = preg_replace ('|viewAreaXPC=".*?"|s', 'viewAreaXPC="'.$nav_options['rss_xpc'].'"',$rss);
 	$rss = preg_replace ('|viewAreaYPC=".*?"|s', 'viewAreaYPC="'.$nav_options['rss_ypc'].'"',$rss);
 	$rss = preg_replace ('|viewAreaWidthPC=".*?"|s', 'viewAreaWidthPC="'.$nav_options['rss_wpc'].'"',$rss);
@@ -308,8 +301,7 @@ function tsclient_play_content()
 	$id = $_REQUEST['id'];
 	$name = $_REQUEST['name'];
 	$hash = $_REQUEST['hash'];
-	global $TShost;
-	$host = "http://".$TShost;
+	$host = "http://".ts_host();
 	$baseUrl	= urlencode($host."/play/".$hash."/".$id);
 	// TODO NB: this is necessary, even it is not in use, dont delete this
 	$TitleVideo = $name;

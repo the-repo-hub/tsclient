@@ -15,7 +15,7 @@
 	
 if (rssIdd == "PLAY") {
 	dataImgs = null;
-	Iurl = "http://localhost/?page=tsView&amp;hash=<<HASH>>&amp;id=<<ID>>";
+	Iurl = "http://localhost/?page=tsView&amp;hash=<<HASH>>";
 	
 	
     StrImgs = null;
@@ -122,23 +122,6 @@ if (rssIdd == "PLAY") {
 		step = 6;
         if (3 == 5) {
             /* stub section, real logic comes from hot keys */
-        }
-		else if (key == "display" || (key == "video_ffwd") ) {
-			url = "http://localhost/?page=rss_tsstatus";
-            FII = getFocusItemindex();
-            url += "&amp;id=" + urlEncode(getItemInfo(FII, "id"));
-			 /* writeStringToFile("/tmp/1122.d",url); */
-        }
-		else if (key == "five" ) {
-            FII = getFocusItemindex();
-            if (getItemInfo(FII, "category")=="Torrent") {
-				showIdle();
-				burl = "http://localhost/?page=tsbackup";
-				burl += "&amp;mg=" + urlEncode(getItemInfo(FII, "magnet"));
-				burl += "&amp;nm=" + urlEncode(getItemInfo(FII, "info"));
-				getUrl(burl);
-				cancelIdleIdle();
-			}
         }
 		else if (key == "menu1") {
             url = "http://localhost/?page=rss_tsclient";

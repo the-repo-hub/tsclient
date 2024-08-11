@@ -16,7 +16,6 @@ include (DIR_NAME.'/ts.config.php');
 // ====================================
 function tsclient_set_content()
 {
-	global $config;
 	header( "Content-type: text/plain; charset=utf-8" );
 	$icomhomePth = str_replace('/www/modules/tsclient','',DIR_NAME)."/iconmenu/HomeMenu.rss";
 	$icomhomeImg = str_replace('/www/modules/tsclient','',DIR_NAME)."/iconmenu/images/tsclient.fsp";
