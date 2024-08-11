@@ -29,7 +29,7 @@
 	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
 	$ServName = file_get_contents("http://".ts_host()."/echo", 0, $ctx);
 	$listTsRSS = file_get_contents(DIR_NAME."/listTs.rss");
-	$playRSS = file_get_contents(DIR_NAME."/play.rss.php");
+	$playRSS = file_get_contents(tools_path."/play.rss.php");
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
