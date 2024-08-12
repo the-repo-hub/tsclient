@@ -19,13 +19,12 @@
 	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path); require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
-	//FIXME debug
 	$config = array (
-			"host" => "192.168.1.7:18090",
+			"host" => "No set IP",
 			"history" => "ram",
 			"ground" => 5,
 		  );
-	@include (DIR_NAME.'/ts.config.php');
+	include (DIR_NAME.'/ts.config.php');
 	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
 	$ServName = file_get_contents("http://".ts_host()."/echo", 0, $ctx);
 	$listTsRSS = file_get_contents(DIR_NAME."/listTs.rss");
@@ -42,14 +41,6 @@
 		print_r($mpath);echo"\r\n";
 	}
 
-//FIXME
-//rss_tsclient_content();
-//rss_tsclient_list_content();
-//tsView_content();
-//function getMosUrl() {
-//	return "http://192.168.1.10/";
-//}
-//rss_tsstatus_content();
 function getTorrents($hash=null)
 {
 	$host = "http://".ts_host();
