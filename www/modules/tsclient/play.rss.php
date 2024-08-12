@@ -9,7 +9,6 @@
 	if (!isset($TitleVideo))	$TitleVideo = 'None title';
 	if (!isset($ThumbVideo))	$ThumbVideo = 'http://readmas.ru/wp-content/filesall/2012/07/18.jpg';
 	if (!isset($ProxyVideo))	$ProxyVideo = 0;
-	if (!isset($mosUrl))		$mosUrl = "http://127.0.0.1/";
 	$servicename = trim(substr(strrchr(dir_name, '/'), 1 ));
 	$logo = dir_name . "/$servicename.png";
     $baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
