@@ -1,24 +1,26 @@
 <?php
-	$mosUrl = @getMosUrl();
+	$mosUrl = getMosUrl();
 	header( "Content-type: text/plain" );
 	echo '<?xml version="1.0" encoding="utf-8"?>' .PHP_EOL;
 	echo '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">' .PHP_EOL;
 	if (!isset($hash)) return;
     if (!isset($idlespath)) return;
     if (!isset($id)) return;
+    if (!isset($maxId)) return;
 	if (!isset($TitleVideo))	$TitleVideo = 'None title';
 	if (!isset($ThumbVideo))	$ThumbVideo = 'http://readmas.ru/wp-content/filesall/2012/07/18.jpg';
 	if (!isset($ProxyVideo))	$ProxyVideo = 0;
 	$servicename = trim(substr(strrchr(dir_name, '/'), 1 ));
 	$logo = dir_name . "/$servicename.png";
-    $baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
+    $baseUrl = urlencode("http://".ts_host()."/play/".$hash."/");
 ?> 
 
 <onEnter>
 	bufMaxMb	= Integer(1000 / 1024);
 	bufMinBytes	= 384 * 1024;
-	baseUrl		= "<?= $id?>";
-	baseUrl		= "<?= $baseUrl?>";
+	id		    =  <?= $id?>;
+	maxId		=  <?= $maxId?>;
+	baseUrl		= "<?= $baseUrl?>" + id;
 	caption		= "<?= $TitleVideo ?>";
 	preview		= "<?= $ThumbVideo ?>";
 	mosUrl		= "<?= $mosUrl ?>";
@@ -50,12 +52,20 @@
 	if (1 == 2) writeStringToFile("/tmp/tim"+file+".txt", SecondTime + " x=" + x + " m=" + m + " s=" + s + " -----h=" + h);
 </SecondToString>
 <NextVideo>
-    baseUrl = "<?=urlencode("http://".ts_host()."/play/".$hash."/".++$id)?>";
-    executeScript("initData");
+    id = id + 1;
+    if (id &gt; maxId) postMessage("return");
+    else {
+        baseUrl		= "<?= $baseUrl?>" + id;
+        executeScript("initData");
+    }
 </NextVideo>
 <PrevVideo>
-    baseUrl = "<?=urlencode("http://".ts_host()."/play/".$hash."/".--$id)?>";
-    executeScript("initData");
+    id = id - 1;
+    if (1 &gt; id) postMessage("return");
+    else {
+        baseUrl		= "<?= $baseUrl?>" + id;
+        executeScript("initData");
+    }
 </PrevVideo>
 <VideoCompleted>
     executeScript("NextVideo");
@@ -63,7 +73,7 @@
 <initData>
 		urlD = mosUrl + "?page=" + srvName + "_get&amp;id=" + baseUrl;
 		urlD = getURL(urlD);
-		nxtBt = getStringArrayAt(urlD, 1); videoUrl = getStringArrayAt(urlD, 0);
+		videoUrl = getStringArrayAt(urlD, 0);
 		if (videoUrl == null || videoUrl == "") {
 			postMessage("return");
 		}

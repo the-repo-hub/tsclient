@@ -227,7 +227,7 @@ function rss_tsclient_list_content()
 		$ITEM = PHP_EOL.'<item>
 			<title>'.$name.'</title>
 			<description><![CDATA['.$name.']]></description>
-			<link>'.$Lurl.'&amp;id='.$i.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'</link>
+			<link>'.$Lurl.'&amp;id='.$i.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'&amp;maxId='.count($files).'</link>
 			<media:thumbnail url="'.$thumb.'" />
 			<info>'.$name.'</info>
 			<category>TorrentList</category>
@@ -297,6 +297,7 @@ function tsclient_play_content()
 	$TitleVideo = substr($name, 0, strrpos($name, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
 	$idlespath = DIR_NAME."/idle";
+	$maxId = $_REQUEST['maxId'];
 	global $playRSS;
 	eval('?>' . $playRSS);
 }
