@@ -56,13 +56,13 @@ function getTorrents($hash=null)
 	$link = $host."/torrents";
 	if ($hash) $post = '{"action":"get","hash":"'.$hash.'"}';
 	else $post = '{"action":"list"}';
-	return json_decode(postTorr($link, $post),true);
+	return postTorr($link, $post);
 }
 
 function getViewed($hash){
 	$post = '{"action": "list","hash": "'.$hash.'"}';
 	$link = "http://".ts_host()."/viewed";
-	$rows = json_decode(postTorr($link, $post),true);
+	$rows = postTorr($link, $post);
 	$result = array();
 	foreach ($rows as $row){
 		$result[] = $row['file_index'];
@@ -166,7 +166,7 @@ function rss_tsclient_content()
 		$name 	= $torrent['title'];
 		if (!$name) continue;
 		$hash 	= $torrent['hash'];
-		$data = @json_decode($torrent['data'], true);
+		$data = json_decode($torrent['data'], true);
 		$len = formatSize($torrent['torrent_size']);
 		$thumb = DIR_NAME."/img/folder.png";
 	$ITEM = '<item>
@@ -276,6 +276,7 @@ function rss_tsclient_list_content()
 }
 
 function tsView_content()
+	// callback for change unviewed pic to viewed
 {
 	$hash = $_REQUEST['hash'];
 	$html = getTorrents($hash);
@@ -295,6 +296,10 @@ function tsView_content()
 	echo $IMGS;
 }
 
+function tsSeries_content()
+{
+
+}
 function tsclient_play_content() 
 {
 	$_SESSION['rssIdd'] = "PLAY";
@@ -304,6 +309,7 @@ function tsclient_play_content()
 	$baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
 	$TitleVideo = substr($name, 0, strrpos($name, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
+	$idlespath = DIR_NAME."/idle";
 	global $playRSS;
 	eval('?>' . $playRSS);
 }
@@ -376,7 +382,7 @@ function postTorr($url,$QUERY = null) {
 				'content' => $QUERY,
 			),
 		));
-	return file_get_contents($url, false, $context);
+	return json_decode(file_get_contents($url, false, $context), true);
 }
 
 function formatSize($bytes) 

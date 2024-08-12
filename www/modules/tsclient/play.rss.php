@@ -4,6 +4,7 @@
 	echo '<?xml version="1.0" encoding="utf-8"?>' .PHP_EOL;
 	echo '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">' .PHP_EOL;
 	if (!isset($hash)) return;
+    if (!isset($idlespath)) return;
 	if (!isset($baseUrl)) {
 		$baseUrl	= 'http%3A%2F%2F37.220.36.15%2Fvideo%2F327a2776bfd23ed2%2Fiframe';
 		$TitleVideo = 'Пластилиновая ворона (ТВ)';
@@ -315,14 +316,15 @@
 <mediaDisplay name="threePartsView" idleImageXPC="87.5" idleImageYPC="89" idleImageWidthPC="5" idleImageHeightPC="6" itemPerPage="0">
 	<!-- idleImage -->
 
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle1.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle2.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle3.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle4.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle5.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle6.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle7.png</idleImage>
-<idleImage>/usr/local/etc/mos/www/modules/tsclient/idle/idle8.png</idleImage>
+<idleImage><?= $idlespath ?>/idle1.png</idleImage>
+<idleImage><?= $idlespath ?>/idle2.png</idleImage>
+<idleImage><?= $idlespath ?>/idle3.png</idleImage>
+<idleImage><?= $idlespath ?>/idle4.png</idleImage>
+<idleImage><?= $idlespath ?>/idle5.png</idleImage>
+<idleImage><?= $idlespath ?>/idle6.png</idleImage>
+<idleImage><?= $idlespath ?>/idle7.png</idleImage>
+<idleImage><?= $idlespath ?>/idle8.png</idleImage>
+
 
 <previewWindow windowColor="0:0:0" offsetXPC="0" offsetYPC="0" widthPC="100" heightPC="100"></previewWindow>
 	<-- preview --->
