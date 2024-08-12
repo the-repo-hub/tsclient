@@ -5,23 +5,21 @@
 	echo '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">' .PHP_EOL;
 	if (!isset($hash)) return;
     if (!isset($idlespath)) return;
-	if (!isset($baseUrl)) {
-		$baseUrl	= 'http%3A%2F%2F37.220.36.15%2Fvideo%2F327a2776bfd23ed2%2Fiframe';
-		$TitleVideo = 'Пластилиновая ворона (ТВ)';
-		$ThumbVideo = 'http://foma.ru/fotos/journal/93/5051_1.jpg';
-	}
+    if (!isset($id)) return;
 	if (!isset($TitleVideo))	$TitleVideo = 'None title';
 	if (!isset($ThumbVideo))	$ThumbVideo = 'http://readmas.ru/wp-content/filesall/2012/07/18.jpg';
 	if (!isset($ProxyVideo))	$ProxyVideo = 0;
 	if (!isset($mosUrl))		$mosUrl = "http://127.0.0.1/";
 	$servicename = trim(substr(strrchr(dir_name, '/'), 1 ));
 	$logo = dir_name . "/$servicename.png";
+    $baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
 ?> 
 
 <onEnter>
 	bufMaxMb	= Integer(1000 / 1024);
 	bufMinBytes	= 384 * 1024;
-	baseUrl		= "<?= $baseUrl ?>";
+	baseUrl		= "<?= $id?>";
+	baseUrl		= "<?= $baseUrl?>";
 	caption		= "<?= $TitleVideo ?>";
 	preview		= "<?= $ThumbVideo ?>";
 	mosUrl		= "<?= $mosUrl ?>";
@@ -52,7 +50,17 @@
 	if(s &lt; 10)  SecondTime += "0"; SecondTime += sprintf("%s", s);
 	if (1 == 2) writeStringToFile("/tmp/tim"+file+".txt", SecondTime + " x=" + x + " m=" + m + " s=" + s + " -----h=" + h);
 </SecondToString>
-
+<NextVideo>
+    baseUrl = "<?=urlencode("http://".ts_host()."/play/".$hash."/".++$id)?>";
+    executeScript("initData");
+</NextVideo>
+<PrevVideo>
+    baseUrl = "<?=urlencode("http://".ts_host()."/play/".$hash."/".--$id)?>";
+    executeScript("initData");
+</PrevVideo>
+<VideoCompleted>
+    executeScript("NextVideo");
+</VideoCompleted>
 <initData>
 		urlD = mosUrl + "?page=" + srvName + "_get&amp;id=" + baseUrl;
 		urlD = getURL(urlD);
@@ -281,38 +289,6 @@
 	}
 </toggleAspectRatio>
 
-<VideoCompleted>	def = 2;  isNSRtr = 1; executeScript("GetVideo"); </VideoCompleted>
-<PrevVideo>			def = -1; isNSRtr = 0; executeScript("GetVideo"); </PrevVideo>
-<NextVideo>			def = 1;  isNSRtr = 0; executeScript("GetVideo"); </NextVideo>
-
-<GetVideo>
-	if (nxtBt == 1) {
-		showIdle();
-		setRefreshTime(-1);
-		df = def; if (df == 2 ) df = 1;
-		urln = mosUrl + "?page=" + srvName + "_next" + "&amp;next=" + df + "&amp;id=" + baseUrl;
-		urln = getUrl(urln);
-		if (null != urln)) {
-			newCaption	= getStringArrayAt(urln, 3);
-			newImage	= getStringArrayAt(urln, 2);
-			newCaption	= getStringArrayAt(urln, 0);
-			newVideoUrl	= getStringArrayAt(urln, 1);
-			if (newCaption != null &amp;&amp; newCaption != "" &amp;&amp; newCaption != "none") caption  = newCaption;
-			if (newImage != null &amp;&amp; newImage != "" &amp;&amp; newImage != "none") preview = newImage;
-			if (newVideoUrl != null &amp;&amp; newVideoUrl != "" &amp;&amp; newVideoUrl != "none") {
-				playItemURL(-1, 1);
-				baseUrl = newVideoUrl;
-				isNSRtr = 0;
-				doseek = 0;
-				executeScript("initData");
-			}
-		}
-		if (isNSRtr == 1) postMessage("return");
-		setRefreshTime(1000);
-	}
-	if (isNSRtr == 1) postMessage("return");
-</GetVideo>
-
 <mediaDisplay name="threePartsView" idleImageXPC="87.5" idleImageYPC="89" idleImageWidthPC="5" idleImageHeightPC="6" itemPerPage="0">
 	<!-- idleImage -->
 
@@ -418,9 +394,9 @@
 		} else if (key == "setup" || key == "guide") {
 			videoPaused = 1;
 			res = "false";
-		} else if (key == "pageup" &amp;&amp; nxtBt == 1) {
+		} else if (key == "pageup") {
 			executeScript("PrevVideo");
-		} else if (key == "pagedown" &amp;&amp; nxtBt == 1 ) {
+		} else if (key == "pagedown") {
 			executeScript("NextVideo");
 		} else if (key == "display") { executeScript("Tstatus");
 		} else if (key == "menu") {

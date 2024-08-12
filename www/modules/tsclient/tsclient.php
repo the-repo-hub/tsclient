@@ -287,17 +287,13 @@ function tsView_content()
 	echo $IMGS;
 }
 
-function tsSeries_content()
-{
-
-}
 function tsclient_play_content() 
 {
 	$_SESSION['rssIdd'] = "PLAY";
 	$id = $_REQUEST['id'];
 	$name = $_REQUEST['name'];
 	$hash = $_REQUEST['hash'];
-	$baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
+//	$baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
 	$TitleVideo = substr($name, 0, strrpos($name, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
 	$idlespath = DIR_NAME."/idle";
