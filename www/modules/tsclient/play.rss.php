@@ -12,7 +12,7 @@
 	if (!isset($ProxyVideo))	$ProxyVideo = 0;
 	$servicename = trim(substr(strrchr(dir_name, '/'), 1 ));
 	$logo = dir_name . "/$servicename.png";
-    $baseUrl = urlencode("http://".ts_host()."/play/".$hash."/");
+    $baseUrl = urlencode(ts_host()."/play/".$hash."/");
 ?> 
 
 <onEnter>

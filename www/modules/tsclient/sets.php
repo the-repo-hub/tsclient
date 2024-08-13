@@ -162,7 +162,7 @@ if (strpos($icon,'rss_tsclient')) $icon = 'on'; else $icon = 'off';
 <?php 
 echo $config['host'];
 ?>
-"/> IP и порт адрес внешнего (PC или Android) устройства c установленым TorrServer - например 192.168.0.55:8090
+"/> IP и порт адрес внешнего (PC или Android) устройства c установленым TorrServer - например http://192.168.0.55:8090
 </td>
 </tr>
 

@@ -26,7 +26,7 @@
 		  );
 	include (DIR_NAME.'/ts.config.php');
 	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
-	$ServName = file_get_contents("http://".ts_host()."/echo", 0, $ctx);
+	$ServName = file_get_contents(ts_host()."/echo", 0, $ctx);
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
@@ -35,8 +35,7 @@
 
 function getTorrents($hash=null)
 {
-	$host = "http://".ts_host();
-	$link = $host."/torrents";
+	$link = ts_host()."/torrents";
 	if ($hash) $post = '{"action":"get","hash":"'.$hash.'"}';
 	else $post = '{"action":"list"}';
 	return postTorr($link, $post);
@@ -44,7 +43,7 @@ function getTorrents($hash=null)
 
 function getViewed($hash){
 	$post = '{"action": "list","hash": "'.$hash.'"}';
-	$link = "http://".ts_host()."/viewed";
+	$link = ts_host()."/viewed";
 	$rows = postTorr($link, $post);
 	$result = array();
 	foreach ($rows as $row){
@@ -177,7 +176,7 @@ function rss_tsclient_content()
 	$rss = str_replace("<<PROGPTH>>",DIR_NAME."/",$rss);
 	$rss = str_replace("<<idleImage>>",idleImage(),$rss);
 	$rss = str_replace("<<VERPRG>>",SRV_NAME,$rss);
-	$rss = str_replace("<<HOST>>","http://".ts_host()." ".$ServName,$rss);
+	$rss = str_replace("<<HOST>>",ts_host()." ".$ServName,$rss);
 	$rss = str_replace("<<ITEMS>>",$ITEMS,$rss);
 	
 	$rss = preg_replace ('|viewAreaXPC=".*?"|s', 'viewAreaXPC="'.$nav_options['rss_xpc'].'"',$rss);
