@@ -53,21 +53,21 @@
 </SecondToString>
 <NextVideo>
     id = id + 1;
-    if (id &gt; maxId) postMessage("return");
-    else {
+    if (maxId+1 &gt; id) {
         baseUrl		= "<?= $baseUrl?>" + id;
         caption = getURL(mosUrl + "?page=tsclient_caption&amp;id=" + id + "&amp;hash=" + hash);
         executeScript("initData");
     }
+    postMessage("return");
 </NextVideo>
 <PrevVideo>
     id = id - 1;
-    if (1 &gt; id) postMessage("return");
-    else {
+    if (id-1 &gt; 1) {
         baseUrl		= "<?= $baseUrl?>" + id;
         caption = getURL(mosUrl + "?page=tsclient_caption&amp;id=" + id + "&amp;hash=" + hash);
         executeScript("initData");
     }
+    postMessage("return");
 </PrevVideo>
 <VideoCompleted>
     executeScript("NextVideo");

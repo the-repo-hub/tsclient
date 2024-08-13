@@ -28,13 +28,6 @@ $nav_pages['rss_tsstatus'] = array (
 	'load'	=> 'tsclient.php'
 );
 
-
-$nav_pages['tsclient_msg'] = array (
-	'type'  => 'rss',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
 $nav_pages['tsclient_Nmsg'] = array (
 	'type'  => 'rss',
 	'module'=> 'tsclient',
@@ -50,12 +43,6 @@ $nav_pages['tsclient_play'] = array (
 
 // = TXT pages ========================
 
-
-$nav_pages['tsbackup'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-); 
 $nav_pages['tsclient_caption'] = array (
 	'type'  => 'txt',
 	'module'=> 'tsclient',
@@ -75,19 +62,6 @@ $nav_pages['tsseconds'] = array (
 	'load'	=> 'tsclient.php'
 );
 
-$nav_pages['tsfocus'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
-
-$nav_pages['tsinfo'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
 $nav_pages['tsclient_list'] = array (
 	'type'  => 'txt',
 	'module'=> 'tsclient',
@@ -95,12 +69,6 @@ $nav_pages['tsclient_list'] = array (
 );
 
 $nav_pages['tsclient_get'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
-$nav_pages['tsclient_gpio'] = array (
 	'type'  => 'txt',
 	'module'=> 'tsclient',
 	'load'	=> 'tsclient.php'
@@ -126,13 +94,6 @@ $nav_pages['plr_tsstatus'] = array (
 );
 
 $nav_pages['tsRssIdd'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
-
-$nav_pages['moon_404'] = array (
 	'type'  => 'txt',
 	'module'=> 'tsclient',
 	'load'	=> 'tsclient.php'
