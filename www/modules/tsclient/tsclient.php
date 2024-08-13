@@ -300,6 +300,15 @@ if( isset( $_REQUEST['debug'])) {	print_r($path); echo "\r\n";}
 	echo $id.PHP_EOL.'0'.PHP_EOL;
 }
 
+function tsclient_caption_content()
+{
+	$hash = $_REQUEST['hash'];
+	$id = $_REQUEST['id'];
+	$torrents = getTorrents($hash);
+	$files = json_decode($torrents['data'], true)['TorrServer']['Files'];
+	echo $files[$id-1]['path'];
+}
+
 function getPeersMessage($hash, $needPreload=false)
 {
 	$html = array();

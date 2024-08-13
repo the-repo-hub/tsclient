@@ -56,6 +56,7 @@
     if (id &gt; maxId) postMessage("return");
     else {
         baseUrl		= "<?= $baseUrl?>" + id;
+        caption = getURL(mosUrl + "?page=tsclient_caption&amp;id=" + id + "&amp;hash=" + hash);
         executeScript("initData");
     }
 </NextVideo>
@@ -64,6 +65,7 @@
     if (1 &gt; id) postMessage("return");
     else {
         baseUrl		= "<?= $baseUrl?>" + id;
+        caption = getURL(mosUrl + "?page=tsclient_caption&amp;id=" + id + "&amp;hash=" + hash);
         executeScript("initData");
     }
 </PrevVideo>

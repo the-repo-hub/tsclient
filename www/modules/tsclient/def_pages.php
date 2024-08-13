@@ -56,7 +56,11 @@ $nav_pages['tsbackup'] = array (
 	'module'=> 'tsclient',
 	'load'	=> 'tsclient.php'
 ); 
-
+$nav_pages['tsclient_caption'] = array (
+	'type'  => 'txt',
+	'module'=> 'tsclient',
+	'load'	=> 'tsclient.php'
+);
 
 $nav_pages['tsclient_set'] = array (
 	'type'  => 'txt',
