@@ -74,18 +74,6 @@
 		urlD = mosUrl + "?page=" + srvName + "_get&amp;id=" + baseUrl;
 		urlD = getURL(urlD);
 		videoUrl = getStringArrayAt(urlD, 0);
-		if (videoUrl == null || videoUrl == "") {
-			postMessage("return");
-		}
-		if ( proxy==1 ) { 
-			writeStringToFile("/tmp/doseek", doseek);
-			writeStringToFile("/tmp/proxylink.txt", videoUrl);
-			videoUrl = "http://127.0.0.1:1000/";
-		}
-		if (bufMaxMb &gt; 0) {
-				videoUrl = videoUrl + " fileCache=/tmp/videoCachefile cacheSize=" + bufMaxMb;
-		}
-		if ( 1==2 ) writeStringToFile("/tmp/videoUrl.dat", baseUrl + " " + videoUrl);
 		prgbarStatus = "buffering";
 		lastFullness		= 0;
 		sameFullnessCount	= 0;

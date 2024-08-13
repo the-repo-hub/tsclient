@@ -5,10 +5,10 @@
 	error_reporting(E_ALL); ini_set('display_errors', 1);
 
 	if (!function_exists('mb_strlen')) {
-	function mb_substr($str, $pos, $kl,$s=null) {
+	function mb_substr($str, $pos, $kl) {
 		return  iconv_substr($str,$pos, $kl,'UTF-8');
 	}
-	function mb_strlen($str, $s=null) {
+	function mb_strlen($str) {
 		return iconv_strlen($str, 'UTF-8');
 	}
 }
@@ -27,19 +27,11 @@
 	include (DIR_NAME.'/ts.config.php');
 	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
 	$ServName = file_get_contents("http://".ts_host()."/echo", 0, $ctx);
-	$listTsRSS = file_get_contents(DIR_NAME."/listTs.rss");
-	$playRSS = file_get_contents(DIR_NAME."/play.rss.php");
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
 	define("SRV_VER", "V2.0", true);
 	define("SRV_NAME", SRV_MENU." ".SRV_VER, true);
-	if( isset( $_REQUEST['debug'] )) {
-		print_r(PGST);echo"\r\n";
-		print_r(DIR_NAME);echo"\r\n";
-		print_r(SRV_NAME);echo"\r\n";
-		print_r($mpath);echo"\r\n";
-	}
 
 function getTorrents($hash=null)
 {
@@ -174,8 +166,7 @@ function rss_tsclient_content()
 	}
 
 	$gr = '0'.rnd();
-	global $listTsRSS;
-	$rss = $listTsRSS;
+	$rss = file_get_contents(DIR_NAME."/listTs.rss");
 	if ($i == 0)  $rss = str_replace('<!-- header -->',
 					'<!-- header -->'.PHP_EOL.'<image offsetXPC="36.5" offsetYPC="23" widthPC="32" heightPC="45">'.str_replace('tsclient','bigmanTools',DIR_NAME)."/img/error.png".'</image>'.PHP_EOL,$rss);
 	$rss = str_replace('widthPC="35.5"','widthPC="62"',$rss);
@@ -218,10 +209,6 @@ function rss_tsclient_list_content()
 		if (($len+0)>0) $len = formatSize($len); else $len = 'No info';
 		$pic = 'false.png';
 		if (in_array($i, $viewed)) $pic = 'view.png';
-		if (strpos($name,'/')!==false) {
-			$name = '<<>>'.strstr($name, '/');
-			$name = str_replace('<<>>/','',$name);
-		}
 		$name = trim($name);
 		$thumb = DIR_NAME."/img/$pic";
 		$ITEM = PHP_EOL.'<item>
@@ -236,8 +223,7 @@ function rss_tsclient_list_content()
 		$ITEMS .= $ITEM;
 	}
 	$gr = '0'.rnd();
-	global $listTsRSS;
-	$rss = $listTsRSS;
+	$rss = file_get_contents(DIR_NAME."/listTs.rss");
 	$rss = str_replace('"0:154:236"','"216:134:0"',$rss);
 	$title = $_REQUEST['name'];
 	if (mb_strlen($title)>40) {
@@ -293,12 +279,11 @@ function tsclient_play_content()
 	$id = $_REQUEST['id'];
 	$name = $_REQUEST['name'];
 	$hash = $_REQUEST['hash'];
-//	$baseUrl = urlencode("http://".ts_host()."/play/".$hash."/".$id);
 	$TitleVideo = substr($name, 0, strrpos($name, '.'));
 	$ThumbVideo = dir_name.'/img/ground01.jpg';
 	$idlespath = DIR_NAME."/idle";
 	$maxId = $_REQUEST['maxId'];
-	global $playRSS;
+	$playRSS = file_get_contents(DIR_NAME."/play.rss.php");
 	eval('?>' . $playRSS);
 }
 
