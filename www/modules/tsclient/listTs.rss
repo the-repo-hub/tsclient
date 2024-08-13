@@ -186,11 +186,8 @@ if (rssIdd == "PLAY") {
 <!--<image offsetXPC="60.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>display.png</image>-->
 	<image offsetXPC="30.5" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>display.png</image>
 	
-<!--<image offsetXPC="64" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>ffwd.png</image>-->
-	<image offsetXPC="34" offsetYPC="96.4" widthPC="3.5" heightPC="3.2"><<IMGPTH>>ffwd.png</image>
-	
 <!--<text  offsetXPC="68" offsetYPC="96.3" widthPC="16.5" heightPC="3.4"-->
-	<text  offsetXPC="38" offsetYPC="96.3" widthPC="16.5" heightPC="3.4"
+	<text  offsetXPC="34" offsetYPC="96.3" widthPC="16.5" heightPC="3.4"
         foregroundColor="100:100:100" fontSize="13"
         backgroundColor="24:37:43">Status Torrent</text>
 

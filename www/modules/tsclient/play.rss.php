@@ -278,16 +278,6 @@
 	redrawDisplay("widget");
 </hidePopup>
 
-<toggleAspectRatio>
-	currentAspectRatio = getCurrentSetting("$[ASPECT_RATIO]");
-	if (null == originalAspectRatio) { originalAspectRatio = currentAspectRatio; }
-	if 			(currentAspectRatio=="$[PAN_SCAN_4_BY_3]")		{ setAspectRatio("$[LETTER_BOX_4_BY_3]");
-	} else if	(currentAspectRatio=="$[LETTER_BOX_4_BY_3]")	{ setAspectRatio("$[WIDE_16_BY_9]");
-	} else if	(currentAspectRatio=="$[WIDE_16_BY_9]")			{ setAspectRatio("$[WIDE_16_BY_10]");
-	} else if	(currentAspectRatio=="$[WIDE_16_BY_10]")		{ setAspectRatio("$[PAN_SCAN_4_BY_3]");
-	}
-</toggleAspectRatio>
-
 <mediaDisplay name="threePartsView" idleImageXPC="87.5" idleImageYPC="89" idleImageWidthPC="5" idleImageHeightPC="6" itemPerPage="0">
 	<!-- idleImage -->
 
@@ -400,8 +390,6 @@
 		} else if (key == "display") { executeScript("Tstatus");
 		} else if (key == "menu") {
 			if (previewHidePos == 0) previewHidePos = 100; else previewHidePos = 0;
-		} else if (key == "video_frwd" || key == "zoom") {
-			executeScript("toggleAspectRatio");
 		} else if (key == "video_stop") {
 			postMessage("return");
 		} else if (key == "video_completed") {
