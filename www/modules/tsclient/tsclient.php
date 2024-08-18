@@ -30,7 +30,7 @@
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
-	define("SRV_VER", "V2.0", true);
+	define("SRV_VER", "V2.1", true);
 	define("SRV_NAME", SRV_MENU." ".SRV_VER, true);
 
 function getTorrents($hash=null)
