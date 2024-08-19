@@ -269,7 +269,6 @@ if (rssIdd == "PLAY") {
 						{ 	
 							ofset = QII * 2;
 							img = getStringArrayAt(dataImgs, Add(ofset, 1));
-							writeStringToFile("/tmp/img.inf",QII + " || " + ofset + " || " + img);
 							img;
 						} 
 					else  getItemInfo("media:thumbnail");

@@ -49,7 +49,6 @@
 	if(h &lt; 10)  SecondTime = "0" + sprintf("%s:", h); else SecondTime = sprintf("%s:", h);
 	if(m &lt; 10)  SecondTime += "0"; SecondTime += sprintf("%s:", m);
 	if(s &lt; 10)  SecondTime += "0"; SecondTime += sprintf("%s", s);
-	if (1 == 2) writeStringToFile("/tmp/tim"+file+".txt", SecondTime + " x=" + x + " m=" + m + " s=" + s + " -----h=" + h);
 </SecondToString>
 <NextVideo>
     id = id + 1;
@@ -62,7 +61,7 @@
 </NextVideo>
 <PrevVideo>
     id = id - 1;
-    if (id-1 &gt; 1) {
+    if (id &gt; 0) {
         baseUrl		= "<?= $baseUrl?>" + id;
         caption = getURL(mosUrl + "?page=tsclient_caption&amp;id=" + id + "&amp;hash=" + hash);
         executeScript("initData");
@@ -94,7 +93,6 @@
 <onExit>
 	playItemURL(-1, 1);
 	setRefreshTime(-1);
-	writeStringToFile("/tmp/doseek", 0);
 	if (null != originalAspectRatio) {
 		setAspectRatio(originalAspectRatio);
 	}
