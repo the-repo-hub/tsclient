@@ -12,10 +12,6 @@
 		return iconv_strlen($str, 'UTF-8');
 	}
 }
-
-	$stat = @file_get_contents('/tmp/cached/tmp.txt');
-	if (strpos($stat,'.dat') || $stat=='') define("PGST", 'load', true); else define("PGST", 'mem', true);
-	$ses = md5('TSMOSCLIENTSid123456789'); session_name('TSMOSCLIENT'); session_id($ses); session_start();
 	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path); require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
@@ -25,8 +21,6 @@
 			"ground" => 5,
 		  );
 	include (DIR_NAME.'/ts.config.php');
-	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
-	$ServName = file_get_contents(ts_host()."/echo", 0, $ctx);
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
@@ -137,7 +131,6 @@ function rss_tsclient_content()
 	// List of torrents
 {
 	global $nav_options;
-	global $ServName;
 	$_SESSION['rssIdd'] = "TORRENT";
 	$html = getTorrents();
 	$Lurl = getMosUrl().'?page=rss_tsclient_list';
@@ -176,6 +169,8 @@ function rss_tsclient_content()
 	$rss = str_replace("<<PROGPTH>>",DIR_NAME."/",$rss);
 	$rss = str_replace("<<idleImage>>",idleImage(),$rss);
 	$rss = str_replace("<<VERPRG>>",SRV_NAME,$rss);
+	$ctx = stream_context_create(array('http' => array('timeout' => 1)));
+	$ServName = file_get_contents(ts_host()."/echo", 0, $ctx);
 	$rss = str_replace("<<HOST>>",ts_host()." ".$ServName,$rss);
 	$rss = str_replace("<<ITEMS>>",$ITEMS,$rss);
 	
