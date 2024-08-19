@@ -281,19 +281,6 @@ function tsclient_play_content()
 	eval('?>' . $playRSS);
 }
 
-function tsclient_get_content()
-{
-	if( isset($_REQUEST['id'])) $id = $_REQUEST['id']; else $id = '';
-	if (strpos($id,'%2F')) $id = urldecode($id);
-	$url = parse_url($id);
-	$path = $url['path'];
-	$Npath = urlencode($path);
-	$Npath = str_replace('%2F','/',$Npath);
-	$id = str_replace($path,$Npath,$id);
-if( isset( $_REQUEST['debug'])) {	print_r($path); echo "\r\n";}
-	echo $id.PHP_EOL.'0'.PHP_EOL;
-}
-
 function tsclient_caption_content()
 {
 	$hash = $_REQUEST['hash'];

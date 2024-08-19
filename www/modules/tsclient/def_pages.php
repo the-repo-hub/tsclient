@@ -68,12 +68,6 @@ $nav_pages['tsclient_list'] = array (
 	'load'	=> 'tsclient.php'
 );
 
-$nav_pages['tsclient_get'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
 $nav_pages['tsground'] = array (
 	'type'  => 'txt',
 	'module'=> 'tsclient',

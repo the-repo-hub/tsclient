@@ -12,7 +12,7 @@
 	if (!isset($ProxyVideo))	$ProxyVideo = 0;
 	$servicename = trim(substr(strrchr(dir_name, '/'), 1 ));
 	$logo = dir_name . "/$servicename.png";
-    $baseUrl = urlencode(ts_host()."/play/".$hash."/");
+    $baseUrl = ts_host()."/play/".$hash."/";
 ?> 
 
 <onEnter>
@@ -73,9 +73,6 @@
     executeScript("NextVideo");
 </VideoCompleted>
 <initData>
-		urlD = mosUrl + "?page=" + srvName + "_get&amp;id=" + baseUrl;
-		urlD = getURL(urlD);
-		videoUrl = getStringArrayAt(urlD, 0);
 		prgbarStatus = "buffering";
 		lastFullness		= 0;
 		sameFullnessCount	= 0;
@@ -89,7 +86,6 @@
 		isFirstStart		= 1;
 		videoPaused			= 1;
 		firstBuf			= 1;
-		print("Opening:", videoUrl);
 		executeScript("hidePopup");
 		executeScript("showBufferingPopup");
 		SwitchViewer(0);
@@ -170,7 +166,7 @@
 		isFirstStart = 0;
 		setRefreshTime(1000);
 		playItemURL(-1, 1);
-		playItemURL(videoUrl, 3, bufMinBytes, "mediaDisplay", "previewWindow");
+		playItemURL(baseUrl, 3, bufMinBytes, "mediaDisplay", "previewWindow");
 	} else {
 		videoProgress = getPlaybackStatus();
 		playElapsed   = getStringArrayAt(videoProgress, 0);
