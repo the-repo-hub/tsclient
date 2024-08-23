@@ -3,12 +3,8 @@
 
 <onEnter>
 	flag   = 0;							  
-    now = getUrl("http://localhost/?page=tsseconds");
 	logo   = "<<IMGCHANEL>>";
     ground = "<<IMGGROUND>>";
-	ground = getUrl("http://localhost/?page=tsground");
-	
-    rssIdd = "TORENT";
 	rssIdd = getUrl("http://localhost/?page=tsRssIdd");
 	focus = rssIdd - 100000;
 	if (1 != getPageInfo("itemCount") &amp;&amp; "-100000" != focus ) setFocusItemIndex(rssIdd - 1);

@@ -53,27 +53,7 @@ $nav_pages['tsclient_set'] = array (
 	'type'  => 'txt',
 	'module'=> 'tsclient',
 	'load'	=> 'sets.php'
-); 
-
-
-$nav_pages['tsseconds'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
 );
-
-$nav_pages['tsclient_list'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
-$nav_pages['tsground'] = array (
-	'type'  => 'txt',
-	'module'=> 'tsclient',
-	'load'	=> 'tsclient.php'
-);
-
 
 $nav_pages['tsView'] = array (
 	'type'  => 'txt',

@@ -15,19 +15,14 @@
 	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path); require_once($tpath.'/tools.php');
 	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
-	$config = array (
-			"host" => "No set IP",
-			"history" => "ram",
-			"ground" => 5,
-		  );
-	include (DIR_NAME.'/ts.config.php');
+	$config = json_decode(file_get_contents(DIR_NAME.'/options.json'), true);
 	define("DIR_MOS", $mpath, true);
 	require_once($tpath.'/tools.php');
 	$serviceName = SRV_FN;
 	define("SRV_VER", "V2.1", true);
 	define("SRV_NAME", SRV_MENU." ".SRV_VER, true);
 
-function getTorrents($hash=null)
+    function getTorrents($hash=null)
 {
 	$link = ts_host()."/torrents";
 	if ($hash) $post = '{"action":"get","hash":"'.$hash.'"}';
@@ -82,32 +77,9 @@ function ts_host()
 	return $host;
 }
 
-function rnd() 
-{
-	global $config;
-	$ret = $config['ground'];
-	if ($ret>4) {
-		list($usec, $sec) = explode(" ", microtime());
-		$ret = floor(($usec*100)/25)+1;
-	}
-	return $ret;
-}
-
 function tsRssIdd_content() {
 	if (isset($_SESSION['rssIdd']) ) $rssIdd = $_SESSION['rssIdd']; else $rssIdd = 'UNKNOWN';
 	echo $rssIdd;
-}
-
-function tsground_content()
-{
-	$gr = rnd();
-	$img = DIR_NAME."/img/ground0$gr.jpg";
-	echo $img;
-}	
-
-function tsseconds_content()
-{
-echo time();
 }
 
 function idleImage()
@@ -122,7 +94,6 @@ function idleImage()
 	} else {
 		for ($i=1; $i<9; $i++) $idle =$idle . "<idleImage>$pth/images/POPUP_LOADING_0$i.png</idleImage>\r\n";
 	}
-	
 	//for ($i=1; $i<21; $i++) { if ($i<10) $ii = "0$i"; else $ii = $i; $idle =$idle . "<idleImage>".DIR_NAME."/img/idle/idle".$ii.".png</idleImage>\r\n"; }
 	return $idle;
 }
@@ -145,25 +116,23 @@ function rss_tsclient_content()
 		$len = formatSize($torrent['torrent_size']);
 		$thumb = DIR_NAME."/img/folder.png";
 	$ITEM = '<item>
-        <title>'.getFilmCount($data).' series</title>
-        <description><![CDATA['.$name.']]></description>
-		<link>'.$Lurl.'&amp;name='.urlencode($name).'&amp;hash='.$hash.'</link>
-        <media:thumbnail url="'.$thumb.'" />
-        <info>'.$name.'</info>
+        <title>' . getFilmCount($data) . ' series</title>
+        <description><![CDATA[' . $name . ']]></description>
+		<link>' . $Lurl . '&amp;name=' . urlencode($name) . '&amp;hash=' . $hash . '</link>
+        <media:thumbnail url="' . $thumb . '" />
+        <info>' . $name . '</info>
         <category>Torrent</category>
-        <time>'.$len.'</time>
+        <time>' . $len . '</time>
     </item>';
 		$ITEMS .= $ITEM;
 		$i += 1;
 	}
-
-	$gr = '0'.rnd();
-	$rss = file_get_contents(DIR_NAME."/listTs.rss");
+    $rss = file_get_contents(DIR_NAME."/listTs.rss");
 	if ($i == 0)  $rss = str_replace('<!-- header -->',
 					'<!-- header -->'.PHP_EOL.'<image offsetXPC="36.5" offsetYPC="23" widthPC="32" heightPC="45">'.str_replace('tsclient','bigmanTools',DIR_NAME)."/img/error.png".'</image>'.PHP_EOL,$rss);
 	$rss = str_replace('widthPC="35.5"','widthPC="62"',$rss);
 	$rss = str_replace("<<HASH>>","",$rss);
-	$rss = str_replace("<<IMGGROUND>>",DIR_NAME."/img/ground$gr.jpg",$rss);
+	$rss = str_replace("<<IMGGROUND>>",DIR_NAME."/img/ground02.jpg",$rss);
 	$rss = str_replace("<<IMGCHANEL>>",DIR_NAME."/img/ts.png",$rss);
 	$rss = str_replace("<<IMGPTH>>",DIR_NAME."/img/",$rss);
 	$rss = str_replace("<<PROGPTH>>",DIR_NAME."/",$rss);
@@ -173,12 +142,12 @@ function rss_tsclient_content()
 	$ServName = file_get_contents(ts_host()."/echo", 0, $ctx);
 	$rss = str_replace("<<HOST>>",ts_host()." ".$ServName,$rss);
 	$rss = str_replace("<<ITEMS>>",$ITEMS,$rss);
-	
+
 	$rss = preg_replace ('|viewAreaXPC=".*?"|s', 'viewAreaXPC="'.$nav_options['rss_xpc'].'"',$rss);
 	$rss = preg_replace ('|viewAreaYPC=".*?"|s', 'viewAreaYPC="'.$nav_options['rss_ypc'].'"',$rss);
 	$rss = preg_replace ('|viewAreaWidthPC=".*?"|s', 'viewAreaWidthPC="'.$nav_options['rss_wpc'].'"',$rss);
 	$rss = preg_replace ('|viewAreaHeightPC=".*?"|s', 'viewAreaHeightPC="'.$nav_options['rss_hpc'].'"',$rss);
-	
+
 	$rss = str_replace('image offsetXPC="3" offsetYPC="5" widthPC="3.5"','image offsetXPC="1.75" offsetYPC="5" widthPC="4.5"',$rss);
 	echo $rss;
 }
@@ -216,7 +185,6 @@ function rss_tsclient_list_content()
 		</item>';
 		$ITEMS .= $ITEM;
 	}
-	$gr = '0'.rnd();
 	$rss = file_get_contents(DIR_NAME."/listTs.rss");
 	$rss = str_replace('"0:154:236"','"216:134:0"',$rss);
 	$title = $_REQUEST['name'];
@@ -226,12 +194,12 @@ function rss_tsclient_list_content()
 		$rss = str_replace('<text offsetYPC="3" heightPC="4" fontSize="14" offsetXPC="7.5"  widthPC="35.5"',
 							'<text offsetYPC="1.8" heightPC="8" fontSize="14" offsetXPC="7.7" widthPC="62" lines="2"',$rss);
 	} else {
-		
+
 		$rss = str_replace('widthPC="35.5"', 'widthPC="62"',$rss);
 	}
 	$rss = str_replace("<<HASH>>",$hash,$rss);
 	$rss = str_replace('"TORENT"','"LIST"',$rss);
-	$rss = str_replace("<<IMGGROUND>>",DIR_NAME."/img/ground$gr.jpg",$rss);
+	$rss = str_replace("<<IMGGROUND>>",DIR_NAME."/img/ground02.jpg",$rss);
 	$rss = str_replace("<<IMGCHANEL>>",DIR_NAME."/img/folder.png",$rss);
 	$rss = str_replace("<<IMGPTH>>",DIR_NAME."/img/",$rss);
 	$rss = str_replace("<<PROGPTH>>",DIR_NAME."/",$rss);
@@ -267,7 +235,7 @@ function tsView_content()
 	echo $IMGS;
 }
 
-function tsclient_play_content() 
+function tsclient_play_content()
 {
 	$_SESSION['rssIdd'] = "PLAY";
 	$id = $_REQUEST['id'];
@@ -348,7 +316,7 @@ function postTorr($url,$QUERY = null) {
 	return json_decode(file_get_contents($url, false, $context), true);
 }
 
-function formatSize($bytes) 
+function formatSize($bytes)
 {
 		$bytes = $bytes+0;
 		if ($bytes >= 1073741824) {
