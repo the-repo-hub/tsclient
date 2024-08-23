@@ -1,9 +1,0 @@
-[tsclient]
-	revision = 2.0
-	title = "TorrServe MOS client"
-	role = rss
-	files = "www/modules/tsclient/"
-	config_link = "?page=tsclient_sets"
-	require = "bigmanTools"
-	logo = "www/modules/tsclient/tsclient.png"
-	size = 404
