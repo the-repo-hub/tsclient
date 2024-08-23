@@ -12,12 +12,13 @@
 		return iconv_strlen($str, 'UTF-8');
 	}
 }
+	$ses = md5('TSMOSCLIENTSid123456789'); session_name('TSMOSCLIENT'); session_id($ses); session_start();
 	$path = dirname( __FILE__ );
 	define("DIR_NAME", $path, true);
 	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path);
 	require_once(DIR_NAME.'/utils.php');
 	$config = json_decode(file_get_contents(DIR_NAME.'/options.json'), true);
-	define("SRV_NAME", SRV_MENU."2.1", true);
+	define("SRV_NAME", "TorrServe MOS client 2.1", true);
 
 function getTorrents($hash=null) {
 	$link = ts_host()."/torrents";
