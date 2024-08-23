@@ -12,18 +12,14 @@
 		return iconv_strlen($str, 'UTF-8');
 	}
 }
-	$path = dirname( __FILE__ ); define("DIR_NAME", $path, true);
-	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path); require_once($tpath.'/tools.php');
-	$mpath = str_replace(substr(strrchr($path, '/'), 1),'',$path);
+	$path = dirname( __FILE__ );
+	define("DIR_NAME", $path, true);
+	$tpath = str_replace(substr(strrchr($path, '/'), 1),'bigmanTools',$path);
+	require_once(DIR_NAME.'/utils.php');
 	$config = json_decode(file_get_contents(DIR_NAME.'/options.json'), true);
-	define("DIR_MOS", $mpath, true);
-	require_once($tpath.'/tools.php');
-	$serviceName = SRV_FN;
-	define("SRV_VER", "V2.1", true);
-	define("SRV_NAME", SRV_MENU." ".SRV_VER, true);
+	define("SRV_NAME", SRV_MENU."2.1", true);
 
-    function getTorrents($hash=null)
-{
+function getTorrents($hash=null) {
 	$link = ts_host()."/torrents";
 	if ($hash) $post = '{"action":"get","hash":"'.$hash.'"}';
 	else $post = '{"action":"list"}';
@@ -84,17 +80,8 @@ function tsRssIdd_content() {
 
 function idleImage()
 {
-
 	$idle = "\r\n";
-	$pth = str_replace('tsclient','iptvlist',DIR_NAME);
-	$pth = DIR_MOS."iptvlist";
-	if (!file_exists("$pth/im1ages/POPUP_LOADING_01.png")) {
-		//for ($i=1; $i<9; $i++) $idle =$idle . "<idleImage>".DIR_MOS."core/rss/images/idle0".$i.".png</idleImage>\r\n";
-		for ($i=1; $i<9; $i++) $idle =$idle . "<idleImage>".DIR_NAME."/idle/idle".$i.".png</idleImage>\r\n";
-	} else {
-		for ($i=1; $i<9; $i++) $idle =$idle . "<idleImage>$pth/images/POPUP_LOADING_0$i.png</idleImage>\r\n";
-	}
-	//for ($i=1; $i<21; $i++) { if ($i<10) $ii = "0$i"; else $ii = $i; $idle =$idle . "<idleImage>".DIR_NAME."/img/idle/idle".$ii.".png</idleImage>\r\n"; }
+	for ($i=1; $i<9; $i++) $idle =$idle . "<idleImage>".DIR_NAME."/idle/idle".$i.".png</idleImage>\r\n";
 	return $idle;
 }
 
@@ -242,7 +229,7 @@ function tsclient_play_content()
 	$name = $_REQUEST['name'];
 	$hash = $_REQUEST['hash'];
 	$TitleVideo = substr($name, 0, strrpos($name, '.'));
-	$ThumbVideo = dir_name.'/img/ground01.jpg';
+	$ThumbVideo = dir_name.'/img/ground02.jpg';
 	$idlespath = DIR_NAME."/idle";
 	$maxId = $_REQUEST['maxId'];
 	$playRSS = file_get_contents(DIR_NAME."/play.rss.php");
@@ -349,7 +336,7 @@ function formatSize($bytes)
 function tsclient_Nmsg_content($msg, $image = null)
 {
 	$_SESSION['rssIdd'] = "MSG";
-	$pth = tools_path . '/' . 'msg.php';
+	$pth = DIR_NAME . '/' . 'msg.php';
 	$rssmsg = file_get_contents($pth);
 	$rssmsg = str_replace('>Сообщение</', '>' . '</', $rssmsg);
 	$rssmsg = str_replace('backgroundColor="41:41:41"', 'backgroundColor="40:50:60"', $rssmsg);
