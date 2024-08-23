@@ -135,7 +135,7 @@ function rss_tsclient_content()
     $rss = str_replace("<<VERPRG>>", SRV_NAME, $rss);
     $ctx = stream_context_create(array('http' => array('timeout' => 1)));
     $ServName = file_get_contents(ts_host() . "/echo", 0, $ctx);
-    $rss = str_replace("<<HOST>>", ts_host() . " tsclient.php" . $ServName, $rss);
+    $rss = str_replace("<<HOST>>", ts_host() . " ". $ServName, $rss);
     $rss = str_replace("<<ITEMS>>", $ITEMS, $rss);
 
     $rss = preg_replace('|viewAreaXPC=".*?"|s', 'viewAreaXPC="' . $nav_options['rss_xpc'] . '"', $rss);
