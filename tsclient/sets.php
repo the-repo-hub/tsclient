@@ -11,6 +11,8 @@ function tsclient_set_content()
     header("Content-type: text/plain; charset=utf-8");
     global $config;
     if (isset($_REQUEST['host'])) $config['host'] = $_REQUEST['host'];
+    if (isset($_REQUEST['login'])) $config['login'] = $_REQUEST['login'];
+    if (isset($_REQUEST['password'])) $config['password'] = $_REQUEST['password'];
     $icomhomePth = str_replace('/www/modules/tsclient','',DIR_NAME)."/iconmenu/HomeMenu.rss";
 	$icomhomeImg = str_replace('/www/modules/tsclient','',DIR_NAME)."/iconmenu/images/tsclient.fsp";
     if( isset( $_REQUEST['icon'] ) && file_exists($icomhomePth)) {
@@ -104,7 +106,7 @@ function tsclient_sets_head()
         function sendSets(form) {
 
             url = "?page=tsclient_set"
-                + "&host=" + form.elements.host.value + "&icon=" + getOption( form.elements.icon )
+                + "&host=" + form.elements.host.value + "&icon=" + getOption( form.elements.icon ) + "&login=" + form.elements.login.value + "&password=" + form.elements.password.value;
             set_http = getXmlHttpRequestObject();
             set_http.onreadystatechange = handleSets;
             set_http.open("GET", url, true);
@@ -158,6 +160,23 @@ function tsclient_sets_body()
                     ?>
                 </select> Иконка в Home menu replacement
             </td>
+        </tr>
+        <tr>
+            <td>Логин</td>
+            <td><input size=34 id="login" name="login" type="text" value="
+<?php
+            echo $config['login'];
+            ?>
+"/></td>
+        </tr>
+        <tr>
+            <td>Пароль</td>
+            <td>
+            <input size=34 id="password" name="password" type="text" value="
+<?php
+            echo $config['password'];
+            ?>
+"/></td>
         </tr>
         <tr>
             <td colspan="2" align="right">

@@ -294,11 +294,15 @@ function rss_tsstatus_content()
 
 function postTorr($url, $QUERY = null)
 {
+    global $config;
+    $login = $config['login'];
+    $password = $config['password'];
+    $header = 'Content-Type: application/x-www-form-urlencoded' . PHP_EOL . 'X-Requested-With: XMLHttpRequest';
+    if (isset($login)) $header .= PHP_EOL . 'Authorization: Basic ' . base64_encode("$login:$password");
     $context = stream_context_create(array(
         'http' => array(
             'method' => 'POST',
-            'header' => 'Content-Type: application/x-www-form-urlencoded' . PHP_EOL .
-                'X-Requested-With: XMLHttpRequest',
+            'header' => $header,
             'content' => $QUERY,
         ),
     ));
