@@ -1,4 +1,10 @@
 <?php
+//error_reporting(E_ALL); ini_set('display_errors', 1); ini_set('error_reporting', E_ALL);
+//ini_set('error_reporting', E_ALL); 	ini_set('display_errors', 1); 	ini_set('display_startup_errors', 1);
+//error_reporting( E_ERROR ); // Set E_ALL for debuging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if (!function_exists('mb_strlen')) {
     function mb_substr($str, $pos, $kl)
     {
@@ -299,12 +305,17 @@ function postTorr($url, $QUERY = null)
     $password = $config['password'];
     $header = 'Content-Type: application/x-www-form-urlencoded' . PHP_EOL . 'X-Requested-With: XMLHttpRequest';
     if (isset($login)) $header .= PHP_EOL . 'Authorization: Basic ' . base64_encode("$login:$password");
+    $ignore_ssl = json_decode($config['ignore_ssl'], true);
     $context = stream_context_create(array(
         'http' => array(
             'method' => 'POST',
             'header' => $header,
             'content' => $QUERY,
         ),
+        "ssl" => [
+        "verify_peer" => !$ignore_ssl,
+        "verify_peer_name" => !$ignore_ssl,
+    ],
     ));
     return json_decode(file_get_contents($url, false, $context), true);
 }

@@ -13,6 +13,7 @@ function tsclient_set_content()
     if (isset($_REQUEST['host'])) $config['host'] = $_REQUEST['host'];
     if (isset($_REQUEST['login'])) $config['login'] = $_REQUEST['login'];
     if (isset($_REQUEST['password'])) $config['password'] = $_REQUEST['password'];
+    if (isset($_REQUEST['ignore_ssl'])) $config['ignore_ssl'] = $_REQUEST['ignore_ssl'];
     $icomhomePth = str_replace('/www/modules/tsclient','',DIR_NAME)."/iconmenu/HomeMenu.rss";
 	$icomhomeImg = str_replace('/www/modules/tsclient','',DIR_NAME)."/iconmenu/images/tsclient.fsp";
     if( isset( $_REQUEST['icon'] ) && file_exists($icomhomePth)) {
@@ -106,7 +107,7 @@ function tsclient_sets_head()
         function sendSets(form) {
 
             url = "?page=tsclient_set"
-                + "&host=" + form.elements.host.value + "&icon=" + getOption( form.elements.icon ) + "&login=" + form.elements.login.value + "&password=" + form.elements.password.value;
+                + "&host=" + form.elements.host.value + "&icon=" + getOption( form.elements.icon ) + "&login=" + form.elements.login.value + "&password=" + form.elements.password.value + "&ignore_ssl=" +getOption( form.elements.ignore_ssl );
             set_http = getXmlHttpRequestObject();
             set_http.onreadystatechange = handleSets;
             set_http.open("GET", url, true);
@@ -128,6 +129,7 @@ function tsclient_sets_body()
     global $config;
     $icomhomeRss = str_replace('/www/modules/tsclient', '', DIR_NAME) . "/iconmenu/HomeMenu.rss";
     $icon = file_get_contents($icomhomeRss);
+    $ignore_ssl = $config['ignore_ssl'];
     if (strpos($icon, 'rss_tsclient')) $icon = 'on'; else $icon = 'off';
 //
 
@@ -159,6 +161,16 @@ function tsclient_sets_body()
                     showOption($icon, 'off', 'Отключена');
                     ?>
                 </select> Иконка в Home menu replacement
+            </td>
+        </tr>
+        <tr>
+            <td>Игнорировать ошибки SSL</td>
+            <td><select name="ignore_ssl" size=1>
+                    <?php
+                    showOption($ignore_ssl, 'false', 'Отключена');
+                    showOption($ignore_ssl, 'true', 'Включена');
+                    ?>
+                </select>
             </td>
         </tr>
         <tr>
