@@ -1,10 +1,4 @@
 <?php
-//error_reporting(E_ALL); ini_set('display_errors', 1); ini_set('error_reporting', E_ALL);
-//ini_set('error_reporting', E_ALL); 	ini_set('display_errors', 1); 	ini_set('display_startup_errors', 1);
-//error_reporting( E_ERROR ); // Set E_ALL for debuging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 if (!function_exists('mb_strlen')) {
     function mb_substr($str, $pos, $kl)
     {
@@ -98,7 +92,9 @@ function rss_tsclient_content()
 {
     global $nav_options;
     $_SESSION['rssIdd'] = "TORRENT";
-    $html = getTorrents();
+    $ServName = file_get_contents(ts_host() . "/echo");
+    if (!$ServName) $ServName = "Network Error!";
+    $html = @getTorrents();
     $Lurl = getMosUrl() . '?page=rss_tsclient_list';
     $ITEMS = PHP_EOL;
     $i = 1;
@@ -133,11 +129,8 @@ function rss_tsclient_content()
     $rss = str_replace("<<PROGPTH>>", DIR_NAME . "/", $rss);
     $rss = str_replace("<<idleImage>>", idleImage(), $rss);
     $rss = str_replace("<<VERPRG>>", SRV_NAME, $rss);
-    $ctx = stream_context_create(array('http' => array('timeout' => 1)));
-    $ServName = file_get_contents(ts_host() . "/echo", 0, $ctx);
     $rss = str_replace("<<HOST>>", ts_host() . " ". $ServName, $rss);
     $rss = str_replace("<<ITEMS>>", $ITEMS, $rss);
-
     $rss = preg_replace('|viewAreaXPC=".*?"|s', 'viewAreaXPC="' . $nav_options['rss_xpc'] . '"', $rss);
     $rss = preg_replace('|viewAreaYPC=".*?"|s', 'viewAreaYPC="' . $nav_options['rss_ypc'] . '"', $rss);
     $rss = preg_replace('|viewAreaWidthPC=".*?"|s', 'viewAreaWidthPC="' . $nav_options['rss_wpc'] . '"', $rss);

@@ -140,10 +140,7 @@ function tsclient_sets_body()
 
                     <tr>
                         <td>TorrServer</td>
-                        <img src="/modules/tsclient/img/ts.png" height="30px" align="center"/>
         </div>
-        &nbsp;&nbsp;<a href="https://4pda.ru/forum/index.php?showtopic=889960" target="_blank"><b>Посмотреть про сам
-                TorrServe и выбрать подходящий для вашего внешнего устройтва можно тут....</b></a>
         <td>
             <input size=34 id="host" name="host" type="text" value="
 <?php
