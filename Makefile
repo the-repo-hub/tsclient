@@ -1,4 +1,10 @@
+FTP=ftp://192.168.1.10
+AUTH=-u root,root
+REMOTE_DIR=cd /var/www/modules/
+TARGET=tsclient
+
 deploy:
-	lftp -u root,root -e "cd /var/www/modules/; rm -r tsclient/; mirror -R tsclient/ tsclient; bye" ftp://192.168.1.10
+	lftp $(AUTH) -e "$(REMOTE_DIR); rm -r $(TARGET)/; mirror -R $(TARGET)/ $(TARGET); bye" $(FTP)
+
 restore:
-	cd tsclient_old_version/ && lftp -u root,root -e "cd /var/www/modules/; rm -r tsclient/; mirror -R tsclient/ tsclient/; bye" ftp://192.168.1.10
+	cd tsclient_old_version/ && lftp $(AUTH) -e "$(REMOTE_DIR); rm -r $(TARGET)/; mirror -R $(TARGET)/ $(TARGET)/; bye" $(FTP)
