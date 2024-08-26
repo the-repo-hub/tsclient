@@ -150,25 +150,15 @@ function tsclient_sets_body()
 <?php
             echo $config['host'];
             ?>
-"/> IP и порт адрес внешнего (PC или Android) устройства c установленым TorrServer - например http://192.168.0.55:8090
+"/> IP_адрес и порт внешнего устройства c установленым TorrServer Matrix, например: http://192.168.0.55:8090
         </td>
         </tr>
-        <tr>
-            <td>Иконка</td>
-            <td><select name="icon" size=1>
-                    <?php
-                    showOption($icon, 'on', 'Включена');
-                    showOption($icon, 'off', 'Отключена');
-                    ?>
-                </select> Иконка в Home menu replacement
-            </td>
-        </tr>
-        <tr>
+                <tr>
             <td>Игнорировать ошибки SSL</td>
             <td><select name="ignore_ssl" size=1>
                     <?php
-                    showOption($ignore_ssl, 'false', 'Отключена');
-                    showOption($ignore_ssl, 'true', 'Включена');
+                    showOption($ignore_ssl, 'false', 'Нет');
+                    showOption($ignore_ssl, 'true', 'Да');
                     ?>
                 </select>
             </td>
@@ -189,6 +179,16 @@ function tsclient_sets_body()
             echo $config['password'];
             ?>
 "/></td>
+        </tr>
+        <tr>
+            <td>Иконка</td>
+            <td><select name="icon" size=1>
+                    <?php
+                    showOption($icon, 'on', 'Включена');
+                    showOption($icon, 'off', 'Отключена');
+                    ?>
+                </select> Иконка в Home menu replacement
+            </td>
         </tr>
         <tr>
             <td colspan="2" align="right">
