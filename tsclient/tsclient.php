@@ -97,15 +97,20 @@ function rss_tsclient_content()
     // List of torrents
 {
     global $nav_options;
+    global $config;
     $_SESSION['rssIdd'] = "TORRENT";
-    $ServName = file_get_contents(ts_host() . "/echo");
+    $ignore_ssl = json_decode($config['ignore_ssl'],true);
+    $context = stream_context_create(array(
+        "ssl" => [
+        "verify_peer" => !$ignore_ssl,
+        "verify_peer_name" => !$ignore_ssl,
+    ]));
+    $ServName = @file_get_contents(ts_host() . "/echo", false, $context);
     if (!$ServName) $ServName = "Network Error!";
     $html = @getTorrents();
     $Lurl = getMosUrl() . '?page=rss_tsclient_list';
     $ITEMS = PHP_EOL;
-    $i = 1;
-    // $n is index of the line
-    foreach ($html as $n => $torrent) {
+    foreach ($html as $torrent) {
         $name = $torrent['title'];
         if (!$name) continue;
         $hash = $torrent['hash'];
@@ -122,11 +127,8 @@ function rss_tsclient_content()
         <time>' . $len . '</time>
     </item>';
         $ITEMS .= $ITEM;
-        $i += 1;
     }
     $rss = file_get_contents(DIR_NAME . "/listTs.rss");
-    if ($i == 0) $rss = str_replace('<!-- header -->',
-        '<!-- header -->' . PHP_EOL . '<image offsetXPC="36.5" offsetYPC="23" widthPC="32" heightPC="45">' . str_replace('tsclient', 'bigmanTools', DIR_NAME) . "/img/error.png" . '</image>' . PHP_EOL, $rss);
     $rss = str_replace('widthPC="35.5"', 'widthPC="62"', $rss);
     $rss = str_replace("<<HASH>>", "", $rss);
     $rss = str_replace("<<IMGGROUND>>", DIR_NAME . "/img/ground02.jpg", $rss);
@@ -312,12 +314,14 @@ function postTorr($url, $QUERY = null)
             'header' => $header,
             'content' => $QUERY,
         ),
-        "ssl" => [
+        "ssl" => array(
         "verify_peer" => !$ignore_ssl,
         "verify_peer_name" => !$ignore_ssl,
-    ],
+        ),
     ));
-    return json_decode(file_get_contents($url, false, $context), true);
+    $result = json_decode(file_get_contents($url, false, $context), true);
+    if (!$result) return array();
+    return $result;
 }
 
 function formatSize($bytes)
