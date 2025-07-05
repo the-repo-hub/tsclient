@@ -1,9 +1,6 @@
 services:
   web:
-    build: .
-    ports:
-      - "8080:80"
+    image: cs2ag/php5.6-devtest
     volumes:
       - .:/opt/tsclient
-    environment:
-      XDEBUG_CONFIG: remote_host=host.docker.internal
+      - ./xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini

@@ -23,7 +23,9 @@ session_start();
 define("DIR_NAME", dirname(__FILE__), true);
 $config = json_decode(file_get_contents(DIR_NAME . '/options.json'), true);
 define("SRV_NAME", "TorrServe MOS client 2.1", true);
-
+//function getMosUrl(){
+//    return "http://192.168.1.10";
+//}
 function getTorrents($hash = null)
 {
     $link = ts_host() . "/torrents";
@@ -75,9 +77,7 @@ function logger($info)
 function ts_host()
 {
     global $config;
-    $host = $config['host'];
-    //$host = Param($info,'[HOST]', '[/HOST]');
-    return $host;
+    return $config['host'];
 }
 
 function tsRssIdd_content()
@@ -114,11 +114,17 @@ function rss_tsclient_content()
         $name = $torrent['title'];
         if (!$name) continue;
         $hash = $torrent['hash'];
-        $data = json_decode($torrent['data'], true);
         $len = formatSize($torrent['torrent_size']);
         $thumb = DIR_NAME . "/img/folder.png";
+        if (array_key_exists('data', $torrent)) {
+            $data = @json_decode($torrent['data'], true);
+            $count = getFilmCount($data);
+        }
+        else {
+            $count = count($torrent['file_stats']);
+        }
         $ITEM = '<item>
-        <title>' . getFilmCount($data) . ' series</title>
+        <title>' .$count. ' series</title>
         <description><![CDATA[' . $name . ']]></description>
 		<link>' . $Lurl . '&amp;name=' . urlencode($name) . '&amp;hash=' . $hash . '</link>
         <media:thumbnail url="' . $thumb . '" />
@@ -157,7 +163,12 @@ function rss_tsclient_list_content()
     $html = getTorrents($hash);
     $Lurl = getMosUrl() . '?page=tsclient_play';
     $ITEMS = PHP_EOL;
-    $files = json_decode($html['data'], true)['TorrServer']['Files'];
+    if (array_key_exists('data', $html)) {
+        $files = json_decode($html['data'], true)['TorrServer']['Files'];
+    }
+    else {
+        $files = $html['file_stats'];
+    }
     $viewed = getViewed($hash);
     $i = 0;
     foreach ($files as $file) {
